@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurLaneBBot", "AzurLaneBBot\AzurLaneBBot.csproj", "{DA92ED51-D785-491A-B904-C541D2E4C7BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReshDiscordNetLibrary", "ReshDiscordNetLibrary\ReshDiscordNetLibrary.csproj", "{780A7864-844A-4C7C-8F56-2D1C3731FD6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA92ED51-D785-491A-B904-C541D2E4C7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA92ED51-D785-491A-B904-C541D2E4C7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA92ED51-D785-491A-B904-C541D2E4C7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA92ED51-D785-491A-B904-C541D2E4C7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{780A7864-844A-4C7C-8F56-2D1C3731FD6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{780A7864-844A-4C7C-8F56-2D1C3731FD6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{780A7864-844A-4C7C-8F56-2D1C3731FD6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{780A7864-844A-4C7C-8F56-2D1C3731FD6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6AC0054-D3C8-432C-AC6E-8E20FBFCCE97}
+	EndGlobalSection
+EndGlobal
