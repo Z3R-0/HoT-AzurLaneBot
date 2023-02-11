@@ -2,6 +2,7 @@
 using Discord;
 using AzurLaneBBot.Modules.Events;
 using ReshDiscordNetLibrary;
+using System.Configuration;
 
 namespace AzurLaneBBot {
     public class Bot {
@@ -21,7 +22,7 @@ namespace AzurLaneBBot {
         }
 
         public async Task RunAsync() {
-            await _client.LoginAsync(TokenType.Bot, ""); // TODO: Read token from some configuration setup
+            await _client.LoginAsync(TokenType.Bot, ConfigurationManager.AppSettings["token"]);
             await _client.SetGameAsync("just vibing");
             await _client.StartAsync();
 

@@ -1,6 +1,7 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
+using System.Configuration;
 
 namespace AzurLaneBBot.Modules.Events {
     public class Ready : IEvent {
@@ -24,12 +25,20 @@ namespace AzurLaneBBot.Modules.Events {
 
         private async void RegisterCommand() {
 #if DEBUG
-            Logger.Log("Initializing in DEBUG mode");
-            await _interactionService.RegisterCommandsToGuildAsync(ulong.Parse(config.DebugGuildID));
+            ulong debugGuildId;
+
+            try {
+                debugGuildId = ulong.Parse(ConfigurationManager.AppSettings["debugGuildId"]);
+
+                Logger.Log("Initializing in DEBUG mode");
+                await _interactionService.RegisterCommandsToGuildAsync(debugGuildId);
+            } catch (Exception e) {
+                Logger.Log("Tried to parse a guildId from configuration, but failed \n\n" + e.ToString());
+            }
 #else
             Logger.Log("Initializing in RELEASE mode");
             await _interactionService.RegisterCommandsGloballyAsync();
 #endif
-        }
+            }
     }
 }
