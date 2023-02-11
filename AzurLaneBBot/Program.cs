@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Discord;
 using Microsoft.Extensions.DependencyInjection;
 using ReshDiscordNetLibrary;
+using AzurLaneBBot.Modules.Events;
 
 namespace AzurLaneBBot {
     internal static class Program {
@@ -32,6 +33,9 @@ namespace AzurLaneBBot {
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection) {
+            serviceCollection.AddSingleton<Ready>();
+            serviceCollection.AddSingleton<MessageReceived>();
+            serviceCollection.AddSingleton<InteractionCreated>();
             serviceCollection.AddSingleton<Bot>();
             serviceCollection.AddSingleton<InteractionService>();
             serviceCollection.AddSingleton<CommandService>();

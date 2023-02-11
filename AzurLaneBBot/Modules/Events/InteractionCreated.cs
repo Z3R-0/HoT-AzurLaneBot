@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Events {
     public class InteractionCreated : IEvent {
