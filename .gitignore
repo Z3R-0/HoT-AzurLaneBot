@@ -362,3 +362,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/AzurLaneBBot/azurlanedb
+/AzurLaneBBot/Database/azurlanedb.db
