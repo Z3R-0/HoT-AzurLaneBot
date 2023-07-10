@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 
 namespace AzurLaneBBot.Modules.Commands {
-    public class TestCommandHandlers : BotInteraction<SocketMessageComponent> {
+    public class TestCommandHandlers :ReshDiscordNetLibrary.BotInteraction<SocketMessageComponent> {
         [ComponentInteraction("click_button")]
         public async Task HandleButton() {
             await Context.Interaction.UpdateAsync(m => {

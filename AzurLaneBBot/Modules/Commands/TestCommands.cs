@@ -3,7 +3,7 @@ using Discord.WebSocket;
 using Discord;
 
 namespace AzurLaneBBot.Modules.Commands {
-    public class TestCommands : BotInteraction<SocketSlashCommand> {
+    public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
         [SlashCommand("slash", "slash command")]
         public async Task HandleSlash() {
             await RespondAsync("I am a slash command");

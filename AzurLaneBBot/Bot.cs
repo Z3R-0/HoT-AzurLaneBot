@@ -23,7 +23,7 @@ namespace AzurLaneBBot {
 
         public async Task RunAsync() {
             await _client.LoginAsync(TokenType.Bot, ConfigurationManager.AppSettings["token"]);
-            await _client.SetGameAsync("just vibing");
+            await _client.SetGameAsync("gathering waifu data...");
             await _client.StartAsync();
 
 

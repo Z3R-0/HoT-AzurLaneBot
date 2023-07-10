@@ -33,7 +33,7 @@ namespace AzurLaneBBot.Modules.Events {
                 Logger.Log("Initializing in DEBUG mode");
                 await _interactionService.RegisterCommandsToGuildAsync(debugGuildId);
             } catch (Exception e) {
-                Logger.Log("Tried to parse a guildId from configuration, but failed \n\n" + e.ToString());
+                Logger.Log("Tried to parse a debug guildId from configuration, but failed \n\n" + e.ToString());
             }
 #else
             Logger.Log("Initializing in RELEASE mode");
