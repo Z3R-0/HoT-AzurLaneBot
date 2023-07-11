@@ -1,12 +1,56 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
 using Discord;
+using Microsoft.EntityFrameworkCore;
+using AzurLaneBBot.Database.Models;
+using ReshDiscordNetLibrary;
+using Jan0660.AzurAPINet;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
-        [SlashCommand("slash", "slash command")]
-        public async Task HandleSlash() {
-            await RespondAsync("I am a slash command");
+
+        private AzurlanedbContext _dbContext = new AzurlanedbContext();
+        private AzurAPIClient azurApiClient = new AzurAPIClient(new AzurAPIClientOptions());
+
+        [SlashCommand("test", "Test if the database can be accessed")]
+        public async Task HandleTestSlash(string shipName) {
+            try {
+                var testEntry = _dbContext.BoobaBotProjects.Where(b => b.Name == shipName).FirstOrDefault();
+
+                if(testEntry == null) {
+                    throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
+                }
+
+                var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
+
+                embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}\nIsSkinOf: {testEntry.IsSkinOf ?? "false"}\nCup size: {testEntry.CupSize}\n" +
+                                   $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
+
+                await RespondAsync(embed: embed.Build());
+            } catch (Exception e) {
+                Logger.Log(e);
+                await RespondAsync($"Something went wrong while retrieving data from database: {e.Message}");
+            }
+        }
+
+        [SlashCommand("api-test","Test if the 3rd party API can be accessed")]
+        public async Task HandleApiTestSlash(string ShipName) {
+            var isUpdateAvailable = await azurApiClient.DatabaseUpdateAvailableAsync();
+
+            // reload/update cached data
+            await azurApiClient.ReloadCachedAsync();
+
+            // reload cached data to update it
+            await azurApiClient.ReloadEverythingAsync();
+
+            var testShip = azurApiClient.getShipByEnglishName(ShipName);
+            var embed = DiscordUtilityMethods.GetEmbedBuilder("API test result:");
+
+            embed.AddField("Data", $"Retrieved stats from: {testShip.Names.en}\n\nRarity: {testShip.Rarity}\n" +
+                               $"Nationality: {testShip.Nationality}\nClass: {testShip.Class}");
+            embed.WithImageUrl(testShip.Thumbnail);
+
+            await RespondAsync(embed: embed.Build());
         }
 
         [SlashCommand("button", "button command")]

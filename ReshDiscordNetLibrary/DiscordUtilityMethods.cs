@@ -48,7 +48,7 @@ namespace ReshDiscordNetLibrary {
 
             embedBuilder.WithTitle(title);
             embedBuilder.WithColor(Color.Teal);
-            embedBuilder.Footer = new EmbedFooterBuilder().WithText("Reshbot - Created by Spade#7981\nhttps://discord.gg/cXyZZAdpaR");
+            embedBuilder.Footer = new EmbedFooterBuilder().WithText("AzurLaneBoobaBot - Created by Home Of Thighs Guild\nhttps://discord.gg/tnFAXshaha");
 
             return embedBuilder;
         }
