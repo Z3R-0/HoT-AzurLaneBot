@@ -15,6 +15,7 @@ namespace AzurLaneBBot.Modules.Commands {
         [SlashCommand("test", "Test if the database can be accessed")]
         public async Task HandleTestSlash(string shipName) {
             try {
+                await DeferAsync();
                 var testEntry = _dbContext.BoobaBotProjects.Where(b => b.Name == shipName).FirstOrDefault();
 
                 if(testEntry == null) {
@@ -26,7 +27,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}\nIsSkinOf: {testEntry.IsSkinOf ?? "false"}\nCup size: {testEntry.CupSize}\n" +
                                    $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
 
-                await RespondAsync(embed: embed.Build());
+                await FollowupAsync(embed: embed.Build());
             } catch (Exception e) {
                 Logger.Log(e);
                 await RespondAsync($"Something went wrong while retrieving data from database: {e.Message}");
@@ -35,7 +36,13 @@ namespace AzurLaneBBot.Modules.Commands {
 
         [SlashCommand("api-test","Test if the 3rd party API can be accessed")]
         public async Task HandleApiTestSlash(string ShipName) {
+            await DeferAsync();
+
             var isUpdateAvailable = await azurApiClient.DatabaseUpdateAvailableAsync();
+
+            if (isUpdateAvailable) {
+                Logger.Log("There is an update available for the 3rd party API");
+            }
 
             // reload/update cached data
             await azurApiClient.ReloadCachedAsync();
@@ -43,14 +50,14 @@ namespace AzurLaneBBot.Modules.Commands {
             // reload cached data to update it
             await azurApiClient.ReloadEverythingAsync();
 
-            var testShip = azurApiClient.getShipByEnglishName(ShipName);
+            var testShip = azurApiClient.getShipByEnglishName(ShipName.ToLower().Trim());
             var embed = DiscordUtilityMethods.GetEmbedBuilder("API test result:");
 
             embed.AddField("Data", $"Retrieved stats from: {testShip.Names.en}\n\nRarity: {testShip.Rarity}\n" +
                                $"Nationality: {testShip.Nationality}\nClass: {testShip.Class}");
             embed.WithImageUrl(testShip.Thumbnail);
 
-            await RespondAsync(embed: embed.Build());
+            await FollowupAsync(embed: embed.Build());
         }
 
         [SlashCommand("button", "button command")]

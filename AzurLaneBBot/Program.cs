@@ -28,7 +28,8 @@ namespace AzurLaneBBot {
 
         private static DiscordSocketConfig BuildDiscordSocketConfig() {
             return new DiscordSocketConfig {
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
+                UseInteractionSnowflakeDate = false
             };
         }
 

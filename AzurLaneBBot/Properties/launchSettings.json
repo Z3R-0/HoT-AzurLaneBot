@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AzurLaneBBot": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\ididt\\source\\repos\\AzurLaneBBot"
+    }
+  }
+}

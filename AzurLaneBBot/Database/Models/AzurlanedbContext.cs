@@ -14,6 +14,7 @@ public partial class AzurlanedbContext : DbContext
     public AzurlanedbContext(DbContextOptions<AzurlanedbContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<BoobaBotProject> BoobaBotProjects { get; set; }
