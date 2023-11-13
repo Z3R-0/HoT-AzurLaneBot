@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
+using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Database.Models;
 
@@ -19,8 +20,8 @@ public partial class AzurlanedbContext : DbContext
 
     public virtual DbSet<BoobaBotProject> BoobaBotProjects { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlite(ConfigurationManager.AppSettings["dbConnString"]);
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+        => optionsBuilder.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
