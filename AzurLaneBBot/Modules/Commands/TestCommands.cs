@@ -5,18 +5,25 @@ using Microsoft.EntityFrameworkCore;
 using AzurLaneBBot.Database.Models;
 using ReshDiscordNetLibrary;
 using Jan0660.AzurAPINet;
+using Jan0660.AzurAPINet.Ships;
+using AzurApiLibrary;
+using System.Diagnostics;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
 
         private AzurlanedbContext _dbContext = new AzurlanedbContext();
-        private AzurAPIClient azurApiClient = new AzurAPIClient(new AzurAPIClientOptions());
+        private AzurClient _azurClient;
+
+        public TestCommands(AzurClient azurClient) {
+            _azurClient = azurClient;
+        }
 
         [SlashCommand("test", "Test if the database can be accessed")]
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
-                var testEntry = _dbContext.BoobaBotProjects.Where(b => b.Name == shipName).FirstOrDefault();
+                var testEntry = _dbContext.BoobaBotProjects.Where(b => b.Name.ToLower() == shipName.ToLower().Trim()).FirstOrDefault();
 
                 if(testEntry == null) {
                     throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
@@ -26,6 +33,13 @@ namespace AzurLaneBBot.Modules.Commands {
 
                 embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}\nIsSkinOf: {testEntry.IsSkinOf ?? "false"}\nCup size: {testEntry.CupSize}\n" +
                                    $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
+
+                if (string.IsNullOrEmpty(testEntry.IsSkinOf)) {
+                    embed.WithImageUrl((await _azurClient.GetShipAsync(shipName)).Thumbnail);
+                } else {
+                    var shipSkin = (await _azurClient.GetShipAsync(testEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
+                    embed.WithImageUrl(shipSkin.Image);
+                }
 
                 await FollowupAsync(embed: embed.Build());
             } catch (Exception e) {
@@ -37,20 +51,7 @@ namespace AzurLaneBBot.Modules.Commands {
         [SlashCommand("api-test","Test if the 3rd party API can be accessed")]
         public async Task HandleApiTestSlash(string ShipName) {
             await DeferAsync();
-
-            var isUpdateAvailable = await azurApiClient.DatabaseUpdateAvailableAsync();
-
-            if (isUpdateAvailable) {
-                Logger.Log("There is an update available for the 3rd party API");
-            }
-
-            // reload/update cached data
-            await azurApiClient.ReloadCachedAsync();
-
-            // reload cached data to update it
-            await azurApiClient.ReloadEverythingAsync();
-
-            var testShip = azurApiClient.getShipByEnglishName(ShipName.ToLower().Trim());
+            Ship testShip = await _azurClient.GetShipAsync(ShipName);
             var embed = DiscordUtilityMethods.GetEmbedBuilder("API test result:");
 
             embed.AddField("Data", $"Retrieved stats from: {testShip.Names.en}\n\nRarity: {testShip.Rarity}\n" +

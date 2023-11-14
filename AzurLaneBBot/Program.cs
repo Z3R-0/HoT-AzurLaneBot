@@ -6,6 +6,8 @@ using Discord;
 using Microsoft.Extensions.DependencyInjection;
 using ReshDiscordNetLibrary;
 using AzurLaneBBot.Modules.Events;
+using Jan0660.AzurAPINet;
+using AzurApiLibrary;
 
 namespace AzurLaneBBot {
     internal static class Program {
@@ -42,6 +44,7 @@ namespace AzurLaneBBot {
             serviceCollection.AddSingleton<CommandService>();
             serviceCollection.AddSingleton<InteractionHandler>();
             serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
+            serviceCollection.AddSingleton<AzurClient>();
         }
 
         private static void ConfigureRequiredServices(IServiceProvider serviceProvider) {
