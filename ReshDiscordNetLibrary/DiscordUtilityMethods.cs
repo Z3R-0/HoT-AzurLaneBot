@@ -15,7 +15,7 @@ namespace ReshDiscordNetLibrary {
         }
 
         /// <summary>
-        /// Returns a user ID formatted with to allow mentioning that user
+        /// Returns a SocketGuildUser object formatted to allow mentioning that user
         /// </summary>
         /// <param name="message">Message to parse</param>
         public static async Task<SocketGuildUser> GetUserFromMessage(string message, InteractionContext context) {
@@ -32,7 +32,7 @@ namespace ReshDiscordNetLibrary {
         }
 
         /// <summary>
-        /// Returns ID of the user mentioned in this message
+        /// Returns ID of the user mentioned in this message as a string
         /// </summary>
         /// <param name="message">Message to parse</param>
         public static string GetUserIdFromMessage(string message) {
@@ -40,9 +40,9 @@ namespace ReshDiscordNetLibrary {
         }
 
         /// <summary>
-        /// Returns a pre-formatted embed with a custom title, the color set to Teal and the Footer to include the creator's name (Spade) and the link to Spade's Shitty Scrapyard
+        /// Returns a pre-formatted embed with a custom title, the color set to Teal and the Footer to include the creator's name (Spade) and the link to the guild's server
         /// </summary>
-        /// <returns>A pre-formatted embed with the color set to Teal and the Footer to include the creator's name (Spade) and the link to Spade's Shitty Scrapyard</returns>
+        /// <returns>A pre-formatted embed with the color set to Teal and the Footer to include the creator's name (Spade) and the link to the guild's server</returns>
         public static EmbedBuilder GetEmbedBuilder(string title) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
 

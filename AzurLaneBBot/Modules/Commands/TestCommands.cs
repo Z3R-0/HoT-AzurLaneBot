@@ -71,22 +71,5 @@ namespace AzurLaneBBot.Modules.Commands {
 
             await RespondAsync("Cool button", components: new ComponentBuilder().WithButton(btn).Build());
         }
-
-        [SlashCommand("menu", "menu command")]
-        public async Task HandleMenu() {
-            var selectMenu = new SelectMenuBuilder {
-                CustomId = "menu_selection",
-                Placeholder = "Select an option",
-                MinValues = 1,
-                MaxValues = 3,
-            };
-
-            selectMenu.AddOption("Hey", "hey", "This is an cool description");
-            selectMenu.AddOption("Hoi", "hoi", "This is an cool description");
-            selectMenu.AddOption("Hallo", "hallo", "This is an cool description");
-            selectMenu.AddOption("Haiii", "haiii", "This is an cool description");
-
-            await RespondAsync("Select an option", components: new ComponentBuilder().WithSelectMenu(selectMenu).Build());
-        }
     }
 }
