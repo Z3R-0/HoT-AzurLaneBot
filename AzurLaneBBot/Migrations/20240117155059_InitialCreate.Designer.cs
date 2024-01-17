@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AzurLaneBBot.Migrations
 {
     [DbContext(typeof(AzurlanedbContext))]
-    [Migration("20240117151943_AddedImageUrlColumn")]
-    partial class AddedImageUrlColumn
+    [Migration("20240117155059_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

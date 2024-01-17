@@ -8,6 +8,9 @@ using ReshDiscordNetLibrary;
 using AzurLaneBBot.Modules.Events;
 using Jan0660.AzurAPINet;
 using AzurApiLibrary;
+using AzurLaneBBot.Database.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace AzurLaneBBot {
     internal static class Program {
@@ -45,6 +48,9 @@ namespace AzurLaneBBot {
             serviceCollection.AddSingleton<InteractionHandler>();
             serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
             serviceCollection.AddSingleton<AzurClient>();
+            serviceCollection.AddDbContext<AzurlanedbContext>(options => {
+                options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
+            });
         }
 
         private static void ConfigureRequiredServices(IServiceProvider serviceProvider) {
