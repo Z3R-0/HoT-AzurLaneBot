@@ -12,8 +12,7 @@ namespace AzurLaneBBot.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "BOOBA_BOT_PROJECT",
-                columns: table => new
-                {
+                columns: table => new {
                     Rarity = table.Column<string>(type: "TEXT", nullable: true),
                     IsSkinOf = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
@@ -21,8 +20,7 @@ namespace AzurLaneBBot.Migrations
                     CoverageType = table.Column<string>(type: "TEXT", nullable: true),
                     Shape = table.Column<string>(type: "TEXT", nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                 });
         }
 

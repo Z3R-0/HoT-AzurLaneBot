@@ -16,4 +16,6 @@ public partial class BoobaBotProject
     public string? CoverageType { get; set; }
 
     public string? Shape { get; set; }
+
+    public string? ImageUrl { get; set; }
 }
