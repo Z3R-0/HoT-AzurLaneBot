@@ -12,7 +12,7 @@ using AzurLaneBBot.Database;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
-        private AzurDbContextDatabaseService _dbService;
+        private IDatabaseService _dbService;
         private AzurClient _azurClient;
 
         public TestCommands(AzurClient azurClient, AzurlanedbContext azurlanedbContext) {
