@@ -8,22 +8,23 @@ using Jan0660.AzurAPINet;
 using Jan0660.AzurAPINet.Ships;
 using AzurApiLibrary;
 using System.Diagnostics;
+using AzurLaneBBot.Database;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
-
-        private AzurlanedbContext _dbContext = new AzurlanedbContext();
+        private AzurDbContextDatabaseService _dbService;
         private AzurClient _azurClient;
 
-        public TestCommands(AzurClient azurClient) {
+        public TestCommands(AzurClient azurClient, AzurlanedbContext azurlanedbContext) {
             _azurClient = azurClient;
+            _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
         }
 
         [SlashCommand("test", "Test if the database can be accessed")]
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
-                var testEntry = _dbContext.BoobaBotProjects.Where(b => b.Name.ToLower() == shipName.ToLower().Trim()).FirstOrDefault();
+                var testEntry = _dbService.GetBBPShip(shipName);
 
                 if(testEntry == null) {
                     throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
