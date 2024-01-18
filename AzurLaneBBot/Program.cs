@@ -28,7 +28,7 @@ namespace AzurLaneBBot {
             ConfigureRequiredServices(serviceProvider);
 
             await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
-            serviceProvider.GetRequiredService<Bot>().RunAsync().GetAwaiter().GetResult();
+            await serviceProvider.GetRequiredService<Bot>().RunAsync();
         }
 
         private static DiscordSocketConfig BuildDiscordSocketConfig() {
