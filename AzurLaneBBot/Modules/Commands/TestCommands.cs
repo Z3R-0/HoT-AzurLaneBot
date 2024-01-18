@@ -8,7 +8,7 @@ using Jan0660.AzurAPINet;
 using Jan0660.AzurAPINet.Ships;
 using AzurApiLibrary;
 using System.Diagnostics;
-using AzurLaneBBot.Database;
+using AzurLaneBBot.Database.DatabaseServices;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
@@ -26,7 +26,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 await DeferAsync();
                 var testEntry = _dbService.GetBBPShip(shipName);
 
-                if(testEntry == null) {
+                if (testEntry == null) {
                     throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
                 }
 
@@ -49,7 +49,7 @@ namespace AzurLaneBBot.Modules.Commands {
             }
         }
 
-        [SlashCommand("api-test","Test if the 3rd party API can be accessed")]
+        [SlashCommand("api-test", "Test if the 3rd party API can be accessed")]
         public async Task HandleApiTestSlash(string ShipName) {
             await DeferAsync();
             Ship testShip = await _azurClient.GetShipAsync(ShipName);
