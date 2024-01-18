@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurLaneBBot", "AzurLaneBBo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReshDiscordNetLibrary", "ReshDiscordNetLibrary\ReshDiscordNetLibrary.csproj", "{780A7864-844A-4C7C-8F56-2D1C3731FD6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurApiLibrary", "AzurApiLibrary\AzurApiLibrary.csproj", "{167FB70F-485A-410B-9957-AE02917C4E9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurApiLibrary", "AzurApiLibrary\AzurApiLibrary.csproj", "{167FB70F-485A-410B-9957-AE02917C4E9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurLaneBBotTests", "AzurLaneBBotTests\AzurLaneBBotTests.csproj", "{AABBC02A-DAC5-4679-A1C4-8612727D29AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{167FB70F-485A-410B-9957-AE02917C4E9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{167FB70F-485A-410B-9957-AE02917C4E9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{167FB70F-485A-410B-9957-AE02917C4E9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
