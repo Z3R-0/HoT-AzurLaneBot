@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 
 namespace AzurLaneBBot.Modules.Commands {
-    public class TestCommandHandlers :ReshDiscordNetLibrary.BotInteraction<SocketMessageComponent> {
+    public class TestCommandHandlers : ReshDiscordNetLibrary.BotInteraction<SocketMessageComponent> {
         [ComponentInteraction("click_button")]
         public async Task HandleButton() {
             await Context.Interaction.UpdateAsync(m => {
@@ -10,12 +10,6 @@ namespace AzurLaneBBot.Modules.Commands {
                 m.Components = null;
             });
             await FollowupAsync($"{Context.User.Username} has clicked the button");
-        }
-
-        // if only one option then use `string`, if more options use `string[]`
-        [ComponentInteraction("menu_selection")]
-        public async Task HandleMenu(string[] chosenOptions) {
-            await RespondAsync(chosenOptions.Aggregate("", (current, option) => current + $"{option} - "));
         }
     }
 }

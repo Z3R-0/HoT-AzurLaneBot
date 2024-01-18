@@ -1,15 +1,14 @@
-﻿using AzurLaneBBot.Core.InteractionHandling;
+﻿using AzurApiLibrary;
+using AzurLaneBBot.Core.InteractionHandling;
+using AzurLaneBBot.Database.Models;
+using AzurLaneBBot.Modules.Events;
+using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Discord;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ReshDiscordNetLibrary;
-using AzurLaneBBot.Modules.Events;
-using Jan0660.AzurAPINet;
-using AzurApiLibrary;
-using AzurLaneBBot.Database.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
 namespace AzurLaneBBot {

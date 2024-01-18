@@ -1,14 +1,11 @@
-﻿using Discord.Interactions;
-using Discord.WebSocket;
-using Discord;
-using Microsoft.EntityFrameworkCore;
-using AzurLaneBBot.Database.Models;
-using ReshDiscordNetLibrary;
-using Jan0660.AzurAPINet;
-using Jan0660.AzurAPINet.Ships;
-using AzurApiLibrary;
-using System.Diagnostics;
+﻿using AzurApiLibrary;
 using AzurLaneBBot.Database.DatabaseServices;
+using AzurLaneBBot.Database.Models;
+using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
+using Jan0660.AzurAPINet.Ships;
+using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
