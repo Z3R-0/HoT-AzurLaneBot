@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReshDiscordNetLibrary", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurApiLibrary", "AzurApiLibrary\AzurApiLibrary.csproj", "{167FB70F-485A-410B-9957-AE02917C4E9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzurLaneBBotTests", "AzurLaneBBotTests\AzurLaneBBotTests.csproj", "{AABBC02A-DAC5-4679-A1C4-8612727D29AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzurLaneBBotTests", "AzurLaneBBotTests\AzurLaneBBotTests.csproj", "{AABBC02A-DAC5-4679-A1C4-8612727D29AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerImageServicesLibrary", "DockerImageServices\DockerImageServicesLibrary.csproj", "{CDBA3052-B28F-4638-B4ED-0214711F8707}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerImageServicesLibrary", "DockerImageServicesLibrary\DockerImageServicesLibrary.csproj", "{E0A2AB2E-F639-4889-B762-E715574CC534}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AABBC02A-DAC5-4679-A1C4-8612727D29AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CDBA3052-B28F-4638-B4ED-0214711F8707}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDBA3052-B28F-4638-B4ED-0214711F8707}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDBA3052-B28F-4638-B4ED-0214711F8707}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDBA3052-B28F-4638-B4ED-0214711F8707}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0A2AB2E-F639-4889-B762-E715574CC534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0A2AB2E-F639-4889-B762-E715574CC534}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0A2AB2E-F639-4889-B762-E715574CC534}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0A2AB2E-F639-4889-B762-E715574CC534}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
