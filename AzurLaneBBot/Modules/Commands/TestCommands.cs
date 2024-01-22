@@ -10,9 +10,9 @@ using ReshDiscordNetLibrary;
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : ReshDiscordNetLibrary.BotInteraction<SocketSlashCommand> {
         protected IDatabaseService _dbService;
-        protected AzurClient _azurClient;
+        protected IAzurClient _azurClient;
 
-        public TestCommands(AzurClient azurClient, AzurlanedbContext azurlanedbContext) {
+        public TestCommands(IAzurClient azurClient, AzurlanedbContext azurlanedbContext) {
             _azurClient = azurClient;
             _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
         }

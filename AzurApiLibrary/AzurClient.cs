@@ -3,7 +3,7 @@ using Jan0660.AzurAPINet.Ships;
 using ReshDiscordNetLibrary;
 
 namespace AzurApiLibrary {
-    public class AzurClient {
+    public class AzurClient : IAzurClient {
 
         private AzurAPIClient azurApiClient = new AzurAPIClient(new AzurAPIClientOptions());
 
