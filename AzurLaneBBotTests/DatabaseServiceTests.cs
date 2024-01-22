@@ -88,7 +88,6 @@ namespace AzurLaneBBotTests {
             Assert.AreNotEqual(entry?.Name, actualShipName, ignoreCase: false);
         }
 
-
         private static Mock<AzurlanedbContext> GenerateMockContext(IQueryable<BoobaBotProject> data) {
             var mockDatabaseContext = new Mock<AzurlanedbContext>();
             var mockDbSet = new Mock<DbSet<BoobaBotProject>>();
