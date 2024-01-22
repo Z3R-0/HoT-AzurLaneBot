@@ -3,6 +3,14 @@
 
         public bool StoreImage(string imagePath);
 
-        public string GetImagePath(string relatedShip);
+        public ShipImage? GetImage(string shipName);
+    }
+
+    public class ShipImage {
+        public string ShipName { get; private set; }
+
+        public ShipImage(string shipName) {
+            ShipName = shipName;
+        }
     }
 }
