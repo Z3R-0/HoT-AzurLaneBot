@@ -17,8 +17,12 @@ namespace AzurLaneBBot.Database.ImageServices {
             return new ShipImage(shipName, ship.ImageUrl);
         }
 
-        public bool StoreImage(string imagePath) {
-            throw new NotImplementedException();
+        public bool StoreImage(string shipName, string imagePath) {
+            var ship = _databaseService.GetBBPShip(shipName);
+
+            if (ship == null) return false;
+
+            return _databaseService.UpdateBBShipImageURL(shipName, imagePath);
         }
     }
 }

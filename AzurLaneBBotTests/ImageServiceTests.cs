@@ -39,16 +39,31 @@ namespace AzurLaneBBotTests {
 
         [TestMethod]
         public void StoreImage_HappyFlow_ReturnsSuccess() {
-            // Arrange 
+            // Arrange
+            var shipName = "TestShip";
             var imagePath = "thisIsAValidURL";
-            var mockDatabaseService = new Mock<IDatabaseService>();
+
+            var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
+                new BoobaBotProject() {
+                    Rarity = "Test",
+                    IsSkinOf = "",
+                    Name = shipName,
+                    CupSize = "T",
+                    CoverageType = "TestType",
+                    Shape = "T-shaped",
+                    ImageUrl = null
+                }
+            }.AsQueryable());
+
+            var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
 
             // Act
-            var imageService = new ImageService(mockDatabaseService.Object);
-            var result = imageService.StoreImage(imagePath);
+            var imageService = new ImageService(dbService);
+            var result = imageService.StoreImage(shipName, imagePath);
 
             // Assert
             Assert.IsTrue(result);
+            Assert.AreEqual(imagePath, dbService.GetBBPShip(shipName)?.ImageUrl);
         }
 
         private static Mock<AzurlanedbContext> GenerateMockContext(IQueryable<BoobaBotProject> data) {

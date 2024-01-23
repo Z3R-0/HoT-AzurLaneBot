@@ -22,5 +22,26 @@ namespace AzurLaneBBot.Database.DatabaseServices {
         public IEnumerable<BoobaBotProject> GetAllBBPShips() {
             return _dbContext.BoobaBotProjects;
         }
+
+        public bool UpdateBBShipImageURL(string shipToUpdateName, string imageUrl) {
+            using (var dbContext = _dbContext) {
+                var shipEntry = dbContext.BoobaBotProjects.Where(b => b.Name.Equals(shipToUpdateName.ToLower(), StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+
+                if (shipEntry != null) {
+                    shipEntry.ImageUrl = imageUrl;
+
+                    try {
+                        dbContext.SaveChanges();
+                        // Successfully saved entry
+                        return true;
+                    } catch {
+                        // Could not save changes
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+        }
     }
 }

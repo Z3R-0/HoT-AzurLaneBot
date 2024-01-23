@@ -1,7 +1,7 @@
 ﻿namespace AzurLaneBBot.Database.ImageServices {
     public interface IImageService {
 
-        public bool StoreImage(string imagePath);
+        public bool StoreImage(string shipName, string imagePath);
 
         public ShipImage? GetImage(string shipName);
     }

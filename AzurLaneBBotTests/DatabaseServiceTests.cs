@@ -88,6 +88,51 @@ namespace AzurLaneBBotTests {
             Assert.AreNotEqual(entry?.Name, actualShipName, ignoreCase: false);
         }
 
+        [TestMethod]
+        public void UpdateImageUrl_HappyFlow_WithData_ReturnsTrue() {
+            // Arrange
+            var newUrl = "www.thisisaNewURL.com";
+            var oldUrl = "www.thisisanOldURL.com";
+            var shipName = "TestShip";
+
+            Mock<AzurlanedbContext> mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
+                new BoobaBotProject() {
+                    Rarity = "Test",
+                    IsSkinOf = "",
+                    Name = shipName,
+                    CupSize = "T",
+                    CoverageType = "TestType",
+                    Shape = "T-shaped",
+                    ImageUrl = oldUrl
+                }
+            }.AsQueryable());
+
+            // Act
+            var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
+            var result = dbService.UpdateBBShipImageURL(shipName, newUrl);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(newUrl, dbService.GetBBPShip(shipName)?.ImageUrl);
+        }
+
+        [TestMethod]
+        public void UpdateImageUrl_HappyFlow_NoData_ReturnsFalse() {
+            // Arrange
+            var newUrl = "www.thisisaNewURL.com";
+            var shipName = "TestShip";
+
+            Mock<AzurlanedbContext> mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
+
+            // Act
+            var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
+            var result = dbService.UpdateBBShipImageURL(newUrl, shipName);
+
+            // Assert
+            Assert.IsFalse(result);
+            Assert.IsNull(dbService.GetBBPShip(shipName));
+        }
+
         private static Mock<AzurlanedbContext> GenerateMockContext(IQueryable<BoobaBotProject> data) {
             var mockDatabaseContext = new Mock<AzurlanedbContext>();
             var mockDbSet = new Mock<DbSet<BoobaBotProject>>();
