@@ -3,6 +3,7 @@
 namespace AzurLaneBBot.Database.ImageServices {
     public class ImageService : IImageService {
 
+        protected const string _imageLocation = "\\Images\\";
         private IDatabaseService _databaseService;
 
         public ImageService(IDatabaseService databaseService) {
@@ -17,12 +18,12 @@ namespace AzurLaneBBot.Database.ImageServices {
             return new ShipImage(shipName, ship.ImageUrl);
         }
 
-        public bool StoreImage(string shipName, string imagePath) {
+        public bool StoreImage(string shipName) {
             var ship = _databaseService.GetBBPShip(shipName);
 
             if (ship == null) return false;
 
-            return _databaseService.UpdateBBShipImageURL(shipName, imagePath);
+            return _databaseService.UpdateBBShipImageURL(shipName, _imageLocation + shipName + ".png");
         }
     }
 }

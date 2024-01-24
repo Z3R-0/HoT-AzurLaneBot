@@ -38,10 +38,29 @@ namespace AzurLaneBBotTests {
         }
 
         [TestMethod]
+        public void RetrieveImageURL_UnhappyFlow_ReturnsNull() {
+            // Arrange 
+            var shipName = "TestShip";
+            var expectedURL = "theExpectedURL";
+
+            Mock<AzurlanedbContext> mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
+
+            var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
+
+            // Act
+            var imageService = new ImageService(dbService);
+            var result = imageService.GetImage(shipName);
+
+            // Assert
+            Assert.IsNull(result);
+            Assert.IsFalse(string.Equals(expectedURL, result?.ImageURL));
+        }
+
+        [TestMethod]
         public void StoreImage_HappyFlow_ReturnsSuccess() {
             // Arrange
             var shipName = "TestShip";
-            var imagePath = "thisIsAValidURL";
+            var imagePath = $"\\Images\\{shipName}.png";
 
             var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
                 new BoobaBotProject() {
@@ -59,11 +78,30 @@ namespace AzurLaneBBotTests {
 
             // Act
             var imageService = new ImageService(dbService);
-            var result = imageService.StoreImage(shipName, imagePath);
+            var result = imageService.StoreImage(shipName);
 
             // Assert
             Assert.IsTrue(result);
             Assert.AreEqual(imagePath, dbService.GetBBPShip(shipName)?.ImageUrl);
+        }
+
+        [TestMethod]
+        public void StoreImage_UnhappyFlow_ReturnsFalse() {
+            // Arrange
+            var shipName = "TestShip";
+            var imagePath = $"\\Images\\{shipName}.png";
+
+            var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
+
+            var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
+
+            // Act
+            var imageService = new ImageService(dbService);
+            var result = imageService.StoreImage(shipName);
+
+            // Assert
+            Assert.IsFalse(result);
+            Assert.AreNotEqual(imagePath, dbService.GetBBPShip(shipName)?.ImageUrl);
         }
 
         private static Mock<AzurlanedbContext> GenerateMockContext(IQueryable<BoobaBotProject> data) {
