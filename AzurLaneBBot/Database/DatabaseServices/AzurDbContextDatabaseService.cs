@@ -16,7 +16,7 @@ namespace AzurLaneBBot.Database.DatabaseServices {
         public BoobaBotProject? GetBBPShip(string name) {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            return _dbContext.BoobaBotProjects.Where(b => b.Name.Equals(name.ToLower(), StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            return _dbContext.BoobaBotProjects.Where(b => b.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
         }
 
         public IEnumerable<BoobaBotProject> GetAllBBPShips() {
@@ -25,7 +25,7 @@ namespace AzurLaneBBot.Database.DatabaseServices {
 
         public bool UpdateBBShipImageURL(string shipToUpdateName, string imageUrl) {
             using (var dbContext = _dbContext) {
-                var shipEntry = dbContext.BoobaBotProjects.Where(b => b.Name.Equals(shipToUpdateName.ToLower(), StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                var shipEntry = dbContext.BoobaBotProjects.Where(b => b.Name.ToLower().Equals(shipToUpdateName.ToLower())).FirstOrDefault();
 
                 if (shipEntry != null) {
                     shipEntry.ImageUrl = imageUrl;

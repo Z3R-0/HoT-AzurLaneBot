@@ -7,6 +7,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Jan0660.AzurAPINet.Ships;
 using ReshDiscordNetLibrary;
+using System.Reflection;
 
 namespace AzurLaneBBot.Modules.Commands {
     public class TestCommands : BotInteraction<SocketSlashCommand> {
@@ -71,12 +72,15 @@ namespace AzurLaneBBot.Modules.Commands {
             var imageResult = _imageService.GetImage(shipName)?.ImageURL;
 
             if (imageResult != null) {
-                embed.WithImageUrl(imageResult);
+                var file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + imageResult;
+                embed.WithImageUrl($"attachment://{shipName}.png");
+
+                await Context.Channel.SendFileAsync(file, null, false, embed.Build());
             } else {
                 embed.AddField("Failed to retrieve image", $"No image was found in relation to ship: {shipName}");
-            }
 
-            await FollowupAsync(embed: embed.Build());
+                await FollowupAsync(embed: embed.Build());
+            }
         }
 
         [SlashCommand("button", "button command")]

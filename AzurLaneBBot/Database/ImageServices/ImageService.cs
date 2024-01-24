@@ -23,7 +23,11 @@ namespace AzurLaneBBot.Database.ImageServices {
 
             if (ship == null) return false;
 
-            return _databaseService.UpdateBBShipImageURL(shipName, _imageLocation + shipName + ".png");
+            return _databaseService.UpdateBBShipImageURL(shipName, ShipNameToImageLocation(shipName));
+        }
+
+        private static string ShipNameToImageLocation(string shipName) {
+            return _imageLocation + shipName + ".png";
         }
     }
 }
