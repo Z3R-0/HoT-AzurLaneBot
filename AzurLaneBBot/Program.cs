@@ -1,5 +1,6 @@
 ﻿using AzurApiLibrary;
 using AzurLaneBBot.Core.InteractionHandling;
+using AzurLaneBBot.Database.DatabaseServices;
 using AzurLaneBBot.Database.ImageServices;
 using AzurLaneBBot.Database.Models;
 using AzurLaneBBot.Modules.Events;
@@ -51,6 +52,7 @@ namespace AzurLaneBBot {
             serviceCollection.AddDbContext<AzurlanedbContext>(options => {
                 options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
             });
+            serviceCollection.AddSingleton<AzurDbContextDatabaseService>();
             serviceCollection.AddSingleton<ImageService>();
         }
 

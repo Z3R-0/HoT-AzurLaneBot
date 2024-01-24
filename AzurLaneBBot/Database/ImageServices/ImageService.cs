@@ -6,7 +6,7 @@ namespace AzurLaneBBot.Database.ImageServices {
         protected const string _imageLocation = "\\Images\\";
         private IDatabaseService _databaseService;
 
-        public ImageService(IDatabaseService databaseService) {
+        public ImageService(AzurDbContextDatabaseService databaseService) {
             _databaseService = databaseService;
         }
 
