@@ -75,7 +75,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 var file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + imageResult;
                 embed.WithImageUrl($"attachment://{shipName}.png");
 
-                await Context.Channel.SendFileAsync(file, null, false, embed.Build());
+                await Context.Channel.SendFileAsync(file, null, false, embed: embed.Build());
             } else {
                 embed.AddField("Failed to retrieve image", $"No image was found in relation to ship: {shipName}");
 
