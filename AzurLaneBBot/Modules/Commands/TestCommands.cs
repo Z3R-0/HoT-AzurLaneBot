@@ -33,14 +33,20 @@ namespace AzurLaneBBot.Modules.Commands {
 
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 
-                embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}\nIsSkinOf: {testEntry.IsSkinOf ?? "false"}\nCup size: {testEntry.CupSize}\n" +
+                string isSkinOf = "";
+                if (testEntry.IsSkinOf != null) {
+                    isSkinOf = $"\nIsSkinOf: {testEntry.IsSkinOf}";
+                }
+
+                embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}" + isSkinOf + $"\nCup size: {testEntry.CupSize}\n" +
                                    $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
 
                 if (string.IsNullOrEmpty(testEntry.IsSkinOf)) {
                     embed.WithImageUrl((await _azurClient.GetShipAsync(shipName)).Thumbnail);
                 } else {
                     var shipSkin = (await _azurClient.GetShipAsync(testEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
-                    embed.WithImageUrl(shipSkin.Image);
+                    if (shipSkin != null)
+                        embed.WithImageUrl(shipSkin.Image);
                 }
 
                 await FollowupAsync(embed: embed.Build());
@@ -69,10 +75,10 @@ namespace AzurLaneBBot.Modules.Commands {
 
             var embed = DiscordUtilityMethods.GetEmbedBuilder("Custom image test result:");
 
-            var imageResult = _imageService.GetImage(shipName)?.ImageURL;
+            var shipImage = _imageService.GetImage(shipName);
 
-            if (imageResult != null) {
-                var file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + imageResult;
+            if (shipImage != null) {
+                var file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + shipImage.ImagePath;
                 embed.WithImageUrl($"attachment://{shipName}.png");
 
                 await Context.Channel.SendFileAsync(file, null, false, embed: embed.Build());

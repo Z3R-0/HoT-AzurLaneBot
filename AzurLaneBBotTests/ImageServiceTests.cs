@@ -53,7 +53,7 @@ namespace AzurLaneBBotTests {
 
             // Assert
             Assert.IsNull(result);
-            Assert.IsFalse(string.Equals(expectedURL, result?.ImageURL));
+            Assert.IsFalse(string.Equals(expectedURL, result?.ImagePath));
         }
 
         [TestMethod]
