@@ -8,8 +8,10 @@ namespace AzurLaneBBot.Database.DatabaseServices {
 
         public bool UpdateBBShipImageURL(string shipToUpdateName, string imageUrl);
 
-        public bool UpdateBBShip(BoobaBotProject updatedShip);
+        public BoobaBotProject UpdateBBShip(BoobaBotProject updatedShip);
 
-        public bool DeleteShip(string shipToDeleteName);
+        public bool DeleteBBShip(string shipToDeleteName);
+
+        public BoobaBotProject AddBBShip(BoobaBotProject shipToCreate);
     }
 }
