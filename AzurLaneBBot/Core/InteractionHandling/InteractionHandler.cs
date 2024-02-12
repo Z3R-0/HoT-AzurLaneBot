@@ -1,6 +1,6 @@
-﻿using System.Reflection;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.Interactions;
+using System.Reflection;
 
 namespace AzurLaneBBot.Core.InteractionHandling {
     public class InteractionHandler {

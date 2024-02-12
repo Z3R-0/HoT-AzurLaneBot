@@ -1,6 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using AzurLaneBBot.Modules.Events;
 using Discord;
-using AzurLaneBBot.Modules.Events;
+using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 using System.Configuration;
 
@@ -9,15 +9,13 @@ namespace AzurLaneBBot {
         private readonly DiscordSocketClient _client;
 
         private readonly Ready _ready;
-        private readonly MessageReceived _messageReceived;
         private readonly InteractionCreated _interactionCreated;
 
         public static DateTime BotStarted;
 
-        public Bot(DiscordSocketClient client, Ready ready, MessageReceived messageReceived, InteractionCreated interactionCreated) {
+        public Bot(DiscordSocketClient client, Ready ready, InteractionCreated interactionCreated) {
             _client = client;
             _ready = ready;
-            _messageReceived = messageReceived;
             _interactionCreated = interactionCreated;
         }
 
@@ -31,7 +29,6 @@ namespace AzurLaneBBot {
 
             _client.Ready += _ready.HandleEventAsync;
             _client.InteractionCreated += _interactionCreated.HandleEventAsync;
-            _client.MessageReceived += _messageReceived.HandleEventAsync;
 
             await Task.Delay(-1); // waits indefinitely
         }
