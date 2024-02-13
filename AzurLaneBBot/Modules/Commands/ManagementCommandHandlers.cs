@@ -43,6 +43,18 @@ namespace AzurLaneBBot.Modules.Commands {
             }
         }
 
+        [ModalInteraction(ManagementCommands.UpdateShipModalCustomId)]
+        public async Task UpdateShipModalResponse(UpdateShipModal modal) {
+            await DeferAsync();
+
+            if (!VerifyInputStrings(new List<string> { modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape })) {
+                await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
+                return;
+            }
+
+
+        }
+
         private bool VerifyInputStrings(List<string> inputStrings) {
             foreach (string inputString in inputStrings) {
                 if (string.IsNullOrWhiteSpace(inputString))
