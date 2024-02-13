@@ -18,7 +18,7 @@ namespace AzurLaneBBot.Modules.Commands {
             await DeferAsync();
 
             if (!VerifyInputStrings(new List<string> { modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape })) {
-                await FollowupAsync("Input was not correctly formatted, could not add new ship to the database");
+                await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
                 return;
             }
 
@@ -36,10 +36,10 @@ namespace AzurLaneBBot.Modules.Commands {
                 if (result != null) {
                     await FollowupAsync($"Ship '{modal.Name}' added successfully.");
                 } else {
-                    await FollowupAsync($"Failed to add ship '{modal.Name}'. Please see logs or contact administrator for help and try again later.");
+                    await FollowupAsync($"Failed to add ship '{modal.Name}'. Please see logs or contact administrator for help and try again later.", ephemeral: true);
                 }
             } catch (Exception ex) {
-                await FollowupAsync($"Encountered an error while trying to add the ship to the database, error: {ex.Message}");
+                await FollowupAsync($"Encountered an error while trying to add the ship to the database, error: {ex.Message}", ephemeral: true);
             }
         }
 

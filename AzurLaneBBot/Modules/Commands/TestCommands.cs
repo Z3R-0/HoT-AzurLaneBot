@@ -52,7 +52,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 await FollowupAsync(embed: embed.Build());
             } catch (Exception e) {
                 Logger.Log(e);
-                await FollowupAsync($"Something went wrong while retrieving data from database: {e.Message}");
+                await FollowupAsync($"Something went wrong while retrieving data from database: {e.Message}", ephemeral: true);
             }
         }
 
