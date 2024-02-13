@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace AzurLaneBBot.Database.Models;
+﻿namespace AzurLaneBBot.Database.Models;
 
 public partial class BoobaBotProject {
-    [Key]
     public int Id { get; set; }
 
     public string? Rarity { get; set; }
