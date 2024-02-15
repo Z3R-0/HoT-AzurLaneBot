@@ -21,32 +21,22 @@ namespace AzurLaneBBot.Modules.Commands {
 
         [SlashCommand("add-ship", "Add a new ship to the database")]
         public async Task HandleAddShipSlash() {
-            if (!await AuthenticateInteraction())
+            if (!(Context.User as SocketGuildUser).Roles.Any(r => r.Name != "Booba Connoisseur")) {
+                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
                 return;
+            }
 
             await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddShipModalCustomId);
         }
 
         [SlashCommand("update-ship", "Update a ship from the database")]
         public async Task HandleUpdateShipSlash() {
-            if (!await AuthenticateInteraction())
+            if (!(Context.User as SocketGuildUser).Roles.Any(r => r.Name != "Booba Connoisseur")) {
+                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
                 return;
+            }
 
             await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId);
-        }
-
-        private async Task<bool> AuthenticateInteraction() {
-            if (Context.User is not SocketGuildUser user) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-                return false;
-            }
-
-            if (user.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-                return false;
-            }
-
-            return true;
         }
     }
 }
