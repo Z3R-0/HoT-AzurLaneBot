@@ -144,6 +144,7 @@ namespace AzurLaneBBotTests {
             var updatedEntry = fixture.Create<BoobaBotProject>();
 
             updatedEntry.Name = originalEntry.Name;
+            updatedEntry.Id = originalEntry.Id;
 
             var mockEntityEntryWrapper = new Mock<IEntityEntryWrapper<BoobaBotProject>>();
             mockEntityEntryWrapper.Setup(x => x.Update(It.IsAny<BoobaBotProject>(), It.IsAny<BoobaBotProject>()))

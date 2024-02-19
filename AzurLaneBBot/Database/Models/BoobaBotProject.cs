@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace AzurLaneBBot.Database.Models;
 
-namespace AzurLaneBBot.Database.Models;
+public partial class BoobaBotProject {
+    public int Id { get; set; }
 
-public partial class BoobaBotProject
-{
     public string? Rarity { get; set; }
 
     public string? IsSkinOf { get; set; }
