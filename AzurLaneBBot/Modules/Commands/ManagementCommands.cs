@@ -29,14 +29,14 @@ namespace AzurLaneBBot.Modules.Commands {
             await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddShipModalCustomId);
         }
 
-        [SlashCommand("update-ship", "Update a ship from the database")]
-        public async Task HandleUpdateShipSlash() {
-            if (!(Context.User as SocketGuildUser).Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-                return;
-            }
+        //[SlashCommand("update-ship", "Update a ship from the database")]
+        //public async Task HandleUpdateShipSlash() {
+        //    if (!(Context.User as SocketGuildUser).Roles.Any(r => r.Name != "Booba Connoisseur")) {
+        //        await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
+        //        return;
+        //    }
 
-            await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId);
-        }
+        //    await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId);
+        //}
     }
 }
