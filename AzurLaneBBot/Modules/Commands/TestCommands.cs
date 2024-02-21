@@ -10,6 +10,7 @@ using ReshDiscordNetLibrary;
 using System.Reflection;
 
 namespace AzurLaneBBot.Modules.Commands {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "It is unncessary to run the base constructor when initializing Discord.NET components")]
     public class TestCommands : BotInteraction<SocketSlashCommand> {
         protected IDatabaseService _dbService;
         protected IAzurClient _azurClient;
@@ -25,11 +26,7 @@ namespace AzurLaneBBot.Modules.Commands {
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
-                var testEntry = _dbService.GetBBPShip(shipName);
-
-                if (testEntry == null) {
-                    throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
-                }
+                var testEntry = _dbService.GetBBPShip(shipName) ?? throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
 
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 

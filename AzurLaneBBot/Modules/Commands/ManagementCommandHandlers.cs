@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "It is unncessary to run the base constructor when initializing Discord.NET components")]
     public class ManagementCommandHandlers : BotInteraction<SocketModal> {
         protected IDatabaseService _dbService;
 
@@ -17,7 +18,7 @@ namespace AzurLaneBBot.Modules.Commands {
         public async Task AddShipModalResponse(AddShipModal modal) {
             await DeferAsync();
 
-            if (!VerifyInputStrings(new List<string> { modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape })) {
+            if (!VerifyInputStrings([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape])) {
                 await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
                 return;
             }
@@ -47,7 +48,7 @@ namespace AzurLaneBBot.Modules.Commands {
         public async Task UpdateShipModalResponse(UpdateShipModal modal) {
             await DeferAsync();
 
-            if (!VerifyInputStrings(new List<string> { modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape })) {
+            if (!VerifyInputStrings([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape])) {
                 await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
                 return;
             }
@@ -55,7 +56,7 @@ namespace AzurLaneBBot.Modules.Commands {
 
         }
 
-        private bool VerifyInputStrings(List<string> inputStrings) {
+        private static bool VerifyInputStrings(List<string> inputStrings) {
             foreach (string inputString in inputStrings) {
                 if (string.IsNullOrWhiteSpace(inputString))
                     return false;
