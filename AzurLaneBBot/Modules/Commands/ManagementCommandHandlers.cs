@@ -18,7 +18,7 @@ namespace AzurLaneBBot.Modules.Commands {
         public async Task AddShipModalResponse(AddShipModal modal) {
             await DeferAsync();
 
-            if (!VerifyInputStrings([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape])) {
+            if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: true)) {
                 await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
                 return;
             }
@@ -48,19 +48,38 @@ namespace AzurLaneBBot.Modules.Commands {
         public async Task UpdateShipModalResponse(UpdateShipModal modal) {
             await DeferAsync();
 
-            if (!VerifyInputStrings([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape])) {
+            if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: false)) {
                 await FollowupAsync("Input was not correctly formatted, could not add new ship to the database", ephemeral: true);
                 return;
             }
 
-
+            try {
+                var result = _dbService.UpdateBBShip(new BoobaBotProject {
+                    Name = modal.Name,
+                    Rarity = modal.Rarity,
+                    CupSize = modal.Cupsize,
+                    CoverageType = modal.CoverageType,
+                    Shape = modal.Shape,
+                    ImageUrl = ""
+                });
+            } catch (Exception ex) {
+                await FollowupAsync($"Encountered an error while trying to add the ship to the database, error: {ex.Message}", ephemeral: true);
+            }
         }
 
-        private static bool VerifyInputStrings(List<string> inputStrings) {
+        private bool VerifyInput(List<string> inputStrings, bool isAdd) {
             foreach (string inputString in inputStrings) {
                 if (string.IsNullOrWhiteSpace(inputString))
                     return false;
             }
+
+            if (isAdd) {
+                var check = _dbService.GetBBPShip(inputStrings[0]);
+
+                if (check == null)
+                    return false;
+            }
+
             return true;
         }
     }
