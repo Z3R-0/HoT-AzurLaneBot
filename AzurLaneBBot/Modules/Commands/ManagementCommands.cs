@@ -13,6 +13,7 @@ namespace AzurLaneBBot.Modules.Commands {
         protected IImageService _imageService;
 
         public const string AddShipModalCustomId = "add_ship_modal";
+        public const string AddSkinModalCustomId = "add_skin_modal";
         public const string UpdateShipModalCustomId = "update_ship_modal";
 
         public ManagementCommands(AzurlanedbContext azurlanedbContext, ImageService imageService) {
@@ -28,6 +29,16 @@ namespace AzurLaneBBot.Modules.Commands {
             }
 
             await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddShipModalCustomId);
+        }
+
+        [SlashCommand("add-skin", "Add a new skin to the database")]
+        public async Task HandleAddSkinSlash() {
+            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
+                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
+                return;
+            }
+
+            await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddSkinModalCustomId);
         }
 
         [SlashCommand("update-ship", "Update a ship from the database")]
