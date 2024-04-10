@@ -54,7 +54,7 @@ namespace AzurLaneBBot.Modules.Commands {
             }
 
             try {
-                // Add ship to database
+                // Add skin to database
                 var result = _dbService.AddBBShip(new BoobaBotProject {
                     Name = modal.Name,
                     Rarity = modal.Rarity,
