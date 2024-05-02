@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "AzurLaneBBot": {
-      "commandName": "Project",
-      "workingDirectory": "D:\\source\\repos\\AzurLaneBBot"
-    }
-  }
-}
