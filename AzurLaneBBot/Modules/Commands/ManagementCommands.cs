@@ -50,5 +50,23 @@ namespace AzurLaneBBot.Modules.Commands {
 
             await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId);
         }
+
+        [SlashCommand("delete-ship", "Remove a ship/skin from the database")]
+        public async Task HandleDeleteShipSlash(string shipName) {
+            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
+                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
+                return;
+            }
+
+            await DeferAsync();
+
+            if(_dbService.GetBBPShip(shipName) != null) {
+                _dbService.DeleteBBShip(shipName);
+
+                await FollowupAsync($"'{shipName}' has been removed from the database", ephemeral: true);
+            } else {
+                await FollowupAsync($"'{shipName}' was not found in the databse", ephemeral: true);
+            }
+        }
     }
 }
