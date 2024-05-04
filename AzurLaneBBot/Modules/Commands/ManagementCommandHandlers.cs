@@ -45,7 +45,7 @@ namespace AzurLaneBBot.Modules.Commands {
         }
 
         [ModalInteraction(ManagementCommands.AddSkinModalCustomId)]
-        public async Task AddSkinModalResponse(AddShipModal modal) {
+        public async Task AddSkinModalResponse(AddSkinModal modal) {
             await DeferAsync();
 
             if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: true, out var message)) {
@@ -57,7 +57,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 // Add skin to database
                 var result = _dbService.AddBBShip(new BoobaBotProject {
                     Name = modal.Name,
-                    Rarity = modal.Rarity,
+                    IsSkinOf = modal.IsSkinOf,
                     CupSize = modal.Cupsize,
                     CoverageType = modal.CoverageType,
                     Shape = modal.Shape,
@@ -65,12 +65,12 @@ namespace AzurLaneBBot.Modules.Commands {
                 });
 
                 if (result != null) {
-                    await FollowupAsync($"Ship '{modal.Name}' added successfully.");
+                    await FollowupAsync($"Skin '{modal.Name}' added successfully.");
                 } else {
-                    await FollowupAsync($"Failed to add ship '{modal.Name}'. Please see logs or contact administrator for help and try again later.", ephemeral: true);
+                    await FollowupAsync($"Failed to add skin '{modal.Name}'. Please see logs or contact administrator for help and try again later.", ephemeral: true);
                 }
             } catch (Exception ex) {
-                await FollowupAsync($"Encountered an error while trying to add the ship to the database, error: {ex.Message}", ephemeral: true);
+                await FollowupAsync($"Encountered an error while trying to add the skin to the database, error: {ex.Message}", ephemeral: true);
             }
         }
 
@@ -108,7 +108,7 @@ namespace AzurLaneBBot.Modules.Commands {
             if (isAdd) {
                 var check = _dbService.GetBBPShip(inputStrings[0]);
 
-                if (check == null) {
+                if (check != null) {
                     message = "Ship/Skin already exists in the database.";
                     return false;
                 }

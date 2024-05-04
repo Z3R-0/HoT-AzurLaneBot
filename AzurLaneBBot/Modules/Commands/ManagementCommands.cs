@@ -38,7 +38,7 @@ namespace AzurLaneBBot.Modules.Commands {
                 return;
             }
 
-            await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddSkinModalCustomId);
+            await Context.Interaction.RespondWithModalAsync<AddSkinModal>(AddSkinModalCustomId);
         }
 
         [SlashCommand("update-ship", "Update a ship from the database")]
