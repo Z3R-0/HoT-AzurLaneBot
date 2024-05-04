@@ -2,6 +2,7 @@
 using AzurLaneBBot.Database.ImageServices;
 using AzurLaneBBot.Database.Models;
 using AzurLaneBBot.Modules.Commands.Modals;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
@@ -12,9 +13,15 @@ namespace AzurLaneBBot.Modules.Commands {
         protected IDatabaseService _dbService;
         protected IImageService _imageService;
 
+        // Consts
+        public const int EntriesPerPage = 10;
+        // Modal Ids
         public const string AddShipModalCustomId = "add_ship_modal";
         public const string AddSkinModalCustomId = "add_skin_modal";
         public const string UpdateShipModalCustomId = "update_ship_modal";
+        // Button Ids
+        public const string PreviousButtonCustomId = "prev_button:";
+        public const string NextButtonCustomId = "next_button:";
 
         public ManagementCommands(AzurlanedbContext azurlanedbContext, ImageService imageService) {
             _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
@@ -68,5 +75,52 @@ namespace AzurLaneBBot.Modules.Commands {
                 await FollowupAsync($"'{shipName}' was not found in the databse", ephemeral: true);
             }
         }
+
+        [SlashCommand("list-db", "List all database entries")]
+        public async Task HandleListDbSlash() {
+            await DeferAsync();
+
+            var entries = _dbService.GetAllBBPShips();
+            var totalEntries = entries.Count();
+            var totalPages = (totalEntries + EntriesPerPage - 1) / EntriesPerPage;
+
+            var pagination = DisplayPage(entries, 1, totalPages, EntriesPerPage);
+
+            await FollowupAsync(embed: pagination.EmbedBuilder.Build(), components: pagination.ComponentBuilder.Build());
+        }
+
+        public static PaginationResult DisplayPage(IEnumerable<BoobaBotProject> ships, int currentPage, int totalPages, int entriesPerPage) {
+            var embedBuilder = DiscordUtilityMethods.GetEmbedBuilder("Database entries");
+
+            var shipsList = ships
+                .Skip((currentPage - 1) * entriesPerPage)
+                .Take(entriesPerPage)
+                .ToList();
+
+            foreach (var ship in shipsList) {
+                if (string.IsNullOrEmpty(ship.IsSkinOf))
+                    embedBuilder.AddField(ship.Name, $"Rarity: {ship.Rarity} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
+                else
+                    embedBuilder.AddField(ship.Name, $"Is skin of: {ship.IsSkinOf} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
+            }
+
+            var footerText = $"Page {currentPage}/{totalPages}";
+            embedBuilder.WithFooter(footer => footer.Text = footerText);
+
+            var buttons = new ComponentBuilder();
+            if (currentPage > 1) {
+                buttons.WithButton(new ButtonBuilder("Previous", PreviousButtonCustomId + currentPage, ButtonStyle.Primary));
+            }
+            if (currentPage < totalPages) {
+                buttons.WithButton(new ButtonBuilder("Next", NextButtonCustomId + currentPage, ButtonStyle.Primary));
+            }
+
+            return new PaginationResult { EmbedBuilder = embedBuilder, ComponentBuilder = buttons };
+        }
+    }
+
+    public class PaginationResult {
+        public required EmbedBuilder EmbedBuilder { get; set; }
+        public required ComponentBuilder ComponentBuilder { get; set; }
     }
 }
