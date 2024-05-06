@@ -4,14 +4,9 @@ using ReshDiscordNetLibrary;
 using System.Configuration;
 
 namespace AzurLaneBBot.Modules.Events {
-    public class Ready : IEvent {
-        private readonly DiscordSocketClient _client;
-        private readonly InteractionService _interactionService;
-
-        public Ready(DiscordSocketClient client, InteractionService interactionService) { 
-            _client = client;
-            _interactionService = interactionService;
-        }
+    public class Ready(DiscordSocketClient client, InteractionService interactionService) : IEvent {
+        private readonly DiscordSocketClient _client = client;
+        private readonly InteractionService _interactionService = interactionService;
 
         public async Task HandleEventAsync() {
             Logger.Log($"{_client.CurrentUser.Username} was ready in {(DateTime.Now - Bot.BotStarted).Milliseconds}ms");
@@ -28,7 +23,7 @@ namespace AzurLaneBBot.Modules.Events {
             ulong debugGuildId;
 
             try {
-                debugGuildId = ulong.Parse(ConfigurationManager.AppSettings["debugGuildId"]);
+                debugGuildId = ulong.Parse(ConfigurationManager.AppSettings["debugGuildId"]!);
 
                 Logger.Log("Initializing in DEBUG mode");
                 await _interactionService.RegisterCommandsToGuildAsync(debugGuildId);

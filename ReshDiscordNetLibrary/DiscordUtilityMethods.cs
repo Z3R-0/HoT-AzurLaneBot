@@ -18,7 +18,7 @@ namespace ReshDiscordNetLibrary {
         /// Returns a SocketGuildUser object formatted to allow mentioning that user
         /// </summary>
         /// <param name="message">Message to parse</param>
-        public static async Task<SocketGuildUser> GetUserFromMessage(string message, InteractionContext context) {
+        public static async Task<SocketGuildUser?> GetUserFromMessage(string message, InteractionContext context) {
             try {
                 SocketGuildUser user;
 

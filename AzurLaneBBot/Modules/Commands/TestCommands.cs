@@ -1,7 +1,6 @@
 ﻿using AzurApiLibrary;
 using AzurLaneBBot.Database.DatabaseServices;
 using AzurLaneBBot.Database.ImageServices;
-using AzurLaneBBot.Database.Models;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -10,17 +9,10 @@ using ReshDiscordNetLibrary;
 using System.Reflection;
 
 namespace AzurLaneBBot.Modules.Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "It is unncessary to run the base constructor when initializing Discord.NET components")]
-    public class TestCommands : BotInteraction<SocketSlashCommand> {
-        protected IDatabaseService _dbService;
-        protected IAzurClient _azurClient;
-        protected IImageService _imageService;
-
-        public TestCommands(AzurClient azurClient, AzurlanedbContext azurlanedbContext, ImageService imageService) {
-            _azurClient = azurClient;
-            _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
-            _imageService = imageService;
-        }
+    public class TestCommands(IDatabaseService dbService, IAzurClient azurClient, IImageService imageService) : BotInteraction<SocketSlashCommand> {
+        private readonly IDatabaseService _dbService = dbService;
+        private readonly IAzurClient _azurClient = azurClient;
+        private readonly IImageService _imageService = imageService;
 
         [SlashCommand("test", "Test if the database can be accessed")]
         public async Task HandleTestSlash(string shipName) {

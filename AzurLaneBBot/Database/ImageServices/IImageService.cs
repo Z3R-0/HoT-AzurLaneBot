@@ -6,13 +6,8 @@
         public ShipImage? GetImage(string shipName);
     }
 
-    public class ShipImage {
-        public string ShipName { get; private set; }
-        public string ImagePath { get; private set; }
-
-        public ShipImage(string shipName, string imageURL) {
-            ShipName = shipName;
-            ImagePath = imageURL;
-        }
+    public class ShipImage(string shipName, string imageURL) {
+        public string ShipName { get; private set; } = shipName;
+        public string ImagePath { get; private set; } = imageURL;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Database.ImageServices;
 using AzurLaneBBot.Database.Models;
 using AzurLaneBBot.Modules.Commands.Modals;
 using Discord;
@@ -8,10 +7,8 @@ using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "It is unncessary to run the base constructor when initializing Discord.NET components")]
-    public class ManagementCommands : BotInteraction<SocketSlashCommand> {
-        protected IDatabaseService _dbService;
-        protected IImageService _imageService;
+    public class ManagementCommands(IDatabaseService dbService) : BotInteraction<SocketSlashCommand> {
+        private readonly IDatabaseService _dbService = dbService;
 
         // Consts
         public const int EntriesPerPage = 10;
@@ -22,11 +19,6 @@ namespace AzurLaneBBot.Modules.Commands {
         // Button Ids
         public const string PreviousButtonCustomId = "prev_button:";
         public const string NextButtonCustomId = "next_button:";
-
-        public ManagementCommands(AzurlanedbContext azurlanedbContext, ImageService imageService) {
-            _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
-            _imageService = imageService;
-        }
 
         [SlashCommand("add-ship", "Add a new ship to the database")]
         public async Task HandleAddShipSlash() {
@@ -67,7 +59,7 @@ namespace AzurLaneBBot.Modules.Commands {
 
             await DeferAsync();
 
-            if(_dbService.GetBBPShip(shipName) != null) {
+            if (_dbService.GetBBPShip(shipName) != null) {
                 _dbService.DeleteBBShip(shipName);
 
                 await FollowupAsync($"'{shipName}' has been removed from the database", ephemeral: true);
@@ -84,7 +76,7 @@ namespace AzurLaneBBot.Modules.Commands {
             var totalEntries = entries.Count();
             var totalPages = (totalEntries + EntriesPerPage - 1) / EntriesPerPage;
 
-            var pagination = DisplayPage(entries, 1, totalPages, EntriesPerPage);
+            var pagination = DisplayPage(entries!, 1, totalPages, EntriesPerPage);
 
             await FollowupAsync(embed: pagination.EmbedBuilder.Build(), components: pagination.ComponentBuilder.Build());
         }
