@@ -6,13 +6,8 @@ using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "It is unncessary to run the base constructor when initializing Discord.NET components")]
-    public class ManagementCommandHandlers : BotInteraction<SocketModal> {
-        protected IDatabaseService _dbService;
-
-        public ManagementCommandHandlers(AzurlanedbContext azurlanedbContext) {
-            _dbService = new AzurDbContextDatabaseService(azurlanedbContext);
-        }
+    public class ManagementCommandHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
+        private readonly IDatabaseService _dbService = dbService;
 
         [ModalInteraction(ManagementCommands.AddShipModalCustomId)]
         public async Task AddShipModalResponse(AddShipModal modal) {

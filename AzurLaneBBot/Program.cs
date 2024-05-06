@@ -14,7 +14,7 @@ using ReshDiscordNetLibrary;
 using System.Configuration;
 
 namespace AzurLaneBBot {
-    internal static class Program {
+    public static class Program {
         private static async Task Main() {
             Bot.BotStarted = DateTime.Now;
 
@@ -40,6 +40,7 @@ namespace AzurLaneBBot {
         }
 
         private static void ConfigureServices(IServiceCollection serviceCollection) {
+            // Boilerplate for Discord.NET
             serviceCollection.AddSingleton<Ready>();
             serviceCollection.AddSingleton<InteractionCreated>();
             serviceCollection.AddSingleton<Bot>();
@@ -47,12 +48,14 @@ namespace AzurLaneBBot {
             serviceCollection.AddSingleton<CommandService>();
             serviceCollection.AddSingleton<InteractionHandler>();
             serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
-            serviceCollection.AddSingleton<AzurClient>();
+
+            // Custom Modules/database
+            serviceCollection.AddSingleton<IAzurClient, AzurClient>();
             serviceCollection.AddDbContext<AzurlanedbContext>(options => {
                 options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
             });
-            serviceCollection.AddSingleton<AzurDbContextDatabaseService>();
-            serviceCollection.AddSingleton<ImageService>();
+            serviceCollection.AddSingleton<IDatabaseService, AzurDbContextDatabaseService>();
+            serviceCollection.AddSingleton<IImageService, ImageService>();
         }
 
         private static void ConfigureRequiredServices(IServiceProvider serviceProvider) {

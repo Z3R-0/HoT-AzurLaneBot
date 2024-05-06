@@ -1,14 +1,10 @@
 ﻿using AzurLaneBBot.Database.DatabaseServices;
 
 namespace AzurLaneBBot.Database.ImageServices {
-    public class ImageService : IImageService {
+    public class ImageService(IDatabaseService databaseService) : IImageService {
 
         protected const string _imageLocation = "\\Images\\";
-        private IDatabaseService _databaseService;
-
-        public ImageService(AzurDbContextDatabaseService databaseService) {
-            _databaseService = databaseService;
-        }
+        private IDatabaseService _databaseService = databaseService;
 
         public ShipImage? GetImage(string shipName) {
             var ship = _databaseService.GetBBPShip(shipName);
