@@ -5,8 +5,8 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
-namespace AzurLaneBBot.Modules.Commands {
-    public class ManagementCommandHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
+namespace AzurLaneBBot.Modules.Commands.Management {
+    public class ManagementModalHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
         private readonly IDatabaseService _dbService = dbService;
 
         [ModalInteraction(ManagementCommands.AddShipModalCustomId)]
@@ -93,7 +93,7 @@ namespace AzurLaneBBot.Modules.Commands {
         }
 
         private bool VerifyInput(List<string> inputStrings, bool isAdd, out string message) {
-            foreach (string inputString in inputStrings) {
+            foreach (var inputString in inputStrings) {
                 if (string.IsNullOrWhiteSpace(inputString)) {
                     message = "Input was not correctly formatted, could not add new ship to the database...";
                     return false;

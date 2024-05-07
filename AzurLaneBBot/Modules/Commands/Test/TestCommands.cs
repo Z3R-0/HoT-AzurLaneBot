@@ -4,11 +4,9 @@ using AzurLaneBBot.Database.ImageServices;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Jan0660.AzurAPINet.Ships;
 using ReshDiscordNetLibrary;
-using System.Reflection;
 
-namespace AzurLaneBBot.Modules.Commands {
+namespace AzurLaneBBot.Modules.Commands.Test {
     public class TestCommands(IDatabaseService dbService, IAzurClient azurClient, IImageService imageService) : BotInteraction<SocketSlashCommand> {
         private readonly IDatabaseService _dbService = dbService;
         private readonly IAzurClient _azurClient = azurClient;
@@ -22,7 +20,7 @@ namespace AzurLaneBBot.Modules.Commands {
 
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 
-                string isSkinOf = "";
+                var isSkinOf = "";
                 if (testEntry.IsSkinOf != null) {
                     isSkinOf = $"\nIsSkinOf: {testEntry.IsSkinOf}";
                 }
@@ -48,7 +46,7 @@ namespace AzurLaneBBot.Modules.Commands {
         [SlashCommand("api-test", "Test if the 3rd party API can be accessed")]
         public async Task HandleApiTestSlash(string shipName) {
             await DeferAsync();
-            Ship testShip = await _azurClient.GetShipAsync(shipName);
+            var testShip = await _azurClient.GetShipAsync(shipName);
             var embed = DiscordUtilityMethods.GetEmbedBuilder("API test result:");
 
             embed.AddField("Data", $"Retrieved stats from: {testShip.Names.en}\n\nRarity: {testShip.Rarity}\n" +
@@ -67,15 +65,19 @@ namespace AzurLaneBBot.Modules.Commands {
             var shipImage = _imageService.GetImage(shipName);
 
             if (shipImage != null) {
-                var file = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + shipImage.ImagePath;
-                embed.WithImageUrl($"attachment://{shipName}.png");
+                embed.WithImageUrl(shipImage.ImageUrl);
 
-                await Context.Channel.SendFileAsync(file, null, false, embed: embed.Build());
+                await FollowupWithFileAsync(shipImage.FilePath, embed: embed.Build());
             } else {
                 embed.AddField("Failed to retrieve image", $"No image was found in relation to ship: {shipName}");
 
                 await FollowupAsync(embed: embed.Build());
             }
+        }
+
+        [SlashCommand("ping", "Use to check if the bot is online without sending messages into a channel")]
+        public async Task HandlePingAsync() {
+            await RespondAsync("Pong!", ephemeral: true);
         }
 
         [SlashCommand("button", "button command")]

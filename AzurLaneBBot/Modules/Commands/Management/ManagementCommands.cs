@@ -6,7 +6,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
-namespace AzurLaneBBot.Modules.Commands {
+namespace AzurLaneBBot.Modules.Commands.Management {
     public class ManagementCommands(IDatabaseService dbService) : BotInteraction<SocketSlashCommand> {
         private readonly IDatabaseService _dbService = dbService;
 
