@@ -4,6 +4,7 @@ using AzurLaneBBot.Database.Models;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Randomizer;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands.Game {
@@ -37,22 +38,29 @@ namespace AzurLaneBBot.Modules.Commands.Game {
             embedBuilder.AddField("Caution!", "Only click the button once you are ready to answer", inline: true);
 
             var componentBuilder = new ComponentBuilder()
-                .WithButton("Submit answer", $"{GuessShipButtonId + Context.User.Id}");
+                .WithButton("Submit answer", GuessShipButtonId + randShip.IsSkinOf ?? randShip.Name);
 
-            await Context.Channel.SendFileAsync(randShipImage.FilePath, null, false, embed: embedBuilder.Build(), components: componentBuilder.Build());
+            await FollowupWithFileAsync(randShipImage.FilePath, embed: embedBuilder.Build(), components: componentBuilder.Build());
         }
 
         private BoobaBotProject? GetRandomShip(bool allowSkins) {
-            var possibleShips = _dbService.GetAllBBPShips().Where(
-                            ship => !string.IsNullOrEmpty(ship!.ImageUrl)
-                            && !allowSkins && string.IsNullOrEmpty(ship.IsSkinOf));
+            IEnumerable<BoobaBotProject>? possibleShips;
 
-            var randomIndex = Random.Shared.Next(0, possibleShips.Count());
+            if (allowSkins) {
+                possibleShips = from ship in _dbService.GetAllBBPShips()
+                                where !string.IsNullOrEmpty(ship!.ImageUrl)
+                                select ship;
+            } else {
+                possibleShips = from ship in _dbService.GetAllBBPShips()
+                                where !string.IsNullOrEmpty(ship!.ImageUrl)
+                                && string.IsNullOrEmpty(ship!.IsSkinOf)
+                                select ship;
+            }
 
-            if (randomIndex == 0)
+            if (possibleShips == null || possibleShips.Count() == 0)
                 return null;
 
-            var randShip = possibleShips.ElementAt(randomIndex);
+            var randShip = possibleShips.ElementAt(new RandomIntegerGenerator().GenerateValue(0, possibleShips.Count()));
             return randShip;
         }
     }

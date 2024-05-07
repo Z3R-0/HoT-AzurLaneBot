@@ -5,7 +5,7 @@ namespace AzurLaneBBot.Modules.Commands.Modals {
         public string Title => "Guess Ship/Skin";
 
         [InputLabel("guess")]
-        [ModalTextInput("Guess", placeholder: "Enter your guess here", maxLength: 255)]
+        [ModalTextInput("Guess", placeholder: "Enter your guess here (only letters, spaces and numbers)", maxLength: 255)]
         public required string Guess { get; set; }
     }
 }

@@ -1,19 +1,18 @@
-﻿using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Modules.Commands.Modals;
+﻿using AzurLaneBBot.Modules.Commands.Modals;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands.Game {
-    public class GameModalHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
-        private readonly IDatabaseService _dbService = dbService;
+    public class GameModalHandlers() : BotInteraction<SocketModal> {
+        [ModalInteraction(GameCommands.GuessShipModalId + "*")]
+        public async Task HandleGuessShipModal(string correctShip, GuessShipGameModal modal) {
+            await DeferAsync();
 
-        [ModalInteraction(GameCommands.GuessShipModalId + "*,*")]
-        public async Task HandleGuessShipModal(GuessShipGameModal modal, string correctShip) {
             if (modal.Guess.Trim().Equals(correctShip, StringComparison.CurrentCultureIgnoreCase)) {
-                await FollowupAsync($"User: {Context.User.Mention} has guessed correctly!");
+                await FollowupAsync($"{Context.User.Mention} has guessed correctly!");
             } else {
-                await FollowupAsync($"User: {Context.User.Mention} has guessed wrong!");
+                await FollowupAsync($"{Context.User.Mention} has guessed wrong!");
             }
         }
     }
