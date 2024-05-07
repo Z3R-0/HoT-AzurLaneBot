@@ -1,18 +1,17 @@
 ﻿using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Database.Models;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
 
-namespace AzurLaneBBot.Modules.Commands {
-    public class ManagementCommandComponentHandlers(IDatabaseService dbService) : BotInteraction<SocketMessageComponent> {
+namespace AzurLaneBBot.Modules.Commands.Management {
+    public class ManagementButtonHandlers(IDatabaseService dbService) : BotInteraction<SocketMessageComponent> {
         private readonly IDatabaseService _dbService = dbService;
 
         [ComponentInteraction(ManagementCommands.NextButtonCustomId + "*")]
         public async Task HandleNextButton(int current) {
             await DeferAsync();
             current++;
-            
+
             await Context.Interaction.Message.DeleteAsync();
 
             var entries = _dbService.GetAllBBPShips();

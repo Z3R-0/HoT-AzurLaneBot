@@ -1,4 +1,5 @@
 ﻿using AzurLaneBBot.Database.DatabaseServices;
+using System.Reflection;
 
 namespace AzurLaneBBot.Database.ImageServices {
     public class ImageService(IDatabaseService databaseService) : IImageService {
@@ -11,7 +12,9 @@ namespace AzurLaneBBot.Database.ImageServices {
 
             if (ship == null || string.IsNullOrEmpty(ship?.ImageUrl)) return null;
 
-            return new ShipImage(shipName, ship.ImageUrl);
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + ship.ImageUrl;
+
+            return new ShipImage(shipName, $"attachment://{shipName}.png", filePath);
         }
 
         public bool StoreImage(string shipName) {
