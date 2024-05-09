@@ -100,7 +100,7 @@ namespace AzurLaneBBot.Modules.Commands.Management {
             File.WriteAllBytes(fileName, imageData);
 
             if (_imageService.RegisterImage(shipName))
-                await FollowupAsync($"The image has been saved as '{fileName}'", ephemeral: true);
+                await FollowupAsync($"The image has been saved and set to {shipName}'s image", ephemeral: true);
             else
                 await FollowupAsync($"The image was saved but could not be linked to the database entry...", ephemeral: true);
         }
