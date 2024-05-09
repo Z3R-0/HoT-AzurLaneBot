@@ -78,7 +78,7 @@ namespace AzurLaneBBotTests {
 
             // Act
             var imageService = new ImageService(dbService);
-            var result = imageService.StoreImage(shipName);
+            var result = imageService.RegisterImage(shipName);
 
             // Assert
             Assert.IsTrue(result);
@@ -97,7 +97,7 @@ namespace AzurLaneBBotTests {
 
             // Act
             var imageService = new ImageService(dbService);
-            var result = imageService.StoreImage(shipName);
+            var result = imageService.RegisterImage(shipName);
 
             // Assert
             Assert.IsFalse(result);

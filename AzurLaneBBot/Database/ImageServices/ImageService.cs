@@ -17,7 +17,7 @@ namespace AzurLaneBBot.Database.ImageServices {
             return new ShipImage(shipName, $"attachment://{shipName}.png", filePath);
         }
 
-        public bool StoreImage(string shipName) {
+        public bool RegisterImage(string shipName) {
             var ship = _databaseService.GetBBPShip(shipName);
 
             if (ship == null) return false;

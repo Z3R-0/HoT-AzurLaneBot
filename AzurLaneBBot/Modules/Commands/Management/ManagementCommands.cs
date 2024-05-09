@@ -1,14 +1,17 @@
 ﻿using AzurLaneBBot.Database.DatabaseServices;
+using AzurLaneBBot.Database.ImageServices;
 using AzurLaneBBot.Database.Models;
 using AzurLaneBBot.Modules.Commands.Modals;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
+using System.Reflection;
 
 namespace AzurLaneBBot.Modules.Commands.Management {
-    public class ManagementCommands(IDatabaseService dbService) : BotInteraction<SocketSlashCommand> {
+    public class ManagementCommands(IDatabaseService dbService, IImageService imageService) : BotInteraction<SocketSlashCommand> {
         private readonly IDatabaseService _dbService = dbService;
+        private readonly IImageService _imageService = imageService;
 
         // Consts
         public const int EntriesPerPage = 10;
@@ -66,6 +69,40 @@ namespace AzurLaneBBot.Modules.Commands.Management {
             } else {
                 await FollowupAsync($"'{shipName}' was not found in the databse", ephemeral: true);
             }
+        }
+
+        [SlashCommand("upload-image", "Upload an image for a ship")]
+        public async Task HandleUploadImageSlash(IAttachment imageUrl, string shipName,
+            [Choice("Yes", "yes"), Choice("No", "no")] string Override) {
+            if (!Path.GetExtension(imageUrl.Url).Contains("png")) {
+                await RespondAsync("We only take PNG format images, try again...", ephemeral: true);
+                return;
+            }
+
+            await DeferAsync(ephemeral: true);
+
+            // Download the image data
+            byte[] imageData;
+            using (var httpClient = new HttpClient()) {
+                imageData = await httpClient.GetByteArrayAsync(imageUrl.Url);
+            }
+
+            var fileName = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Images\\{shipName}.png";
+
+            if (File.Exists(fileName) && Override == "no") {
+                await FollowupAsync("This ship already has an image, " +
+                    "if you would like to override the image then run the command with Override set to 'Yes'",
+                    ephemeral: true);
+                return;
+            }
+
+            // Save the image data to a file
+            File.WriteAllBytes(fileName, imageData);
+
+            if (_imageService.RegisterImage(shipName))
+                await FollowupAsync($"The image has been saved as '{fileName}'", ephemeral: true);
+            else
+                await FollowupAsync($"The image was saved but could not be linked to the database entry...", ephemeral: true);
         }
 
         [SlashCommand("list-db", "List all database entries")]
