@@ -29,7 +29,10 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                                    $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
 
                 if (string.IsNullOrEmpty(testEntry.IsSkinOf)) {
-                    embed.WithImageUrl((await _azurClient.GetShipAsync(shipName)).Thumbnail);
+                    var image = await _azurClient.GetShipAsync(shipName);
+
+                    if (image != null)
+                        embed.WithImageUrl(image.Thumbnail);
                 } else {
                     var shipSkin = (await _azurClient.GetShipAsync(testEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
                     if (shipSkin != null)

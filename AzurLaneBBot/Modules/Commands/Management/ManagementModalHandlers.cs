@@ -69,8 +69,8 @@ namespace AzurLaneBBot.Modules.Commands.Management {
             }
         }
 
-        [ModalInteraction(ManagementCommands.UpdateShipModalCustomId)]
-        public async Task UpdateShipModalResponse(UpdateShipModal modal) {
+        [ModalInteraction(ManagementCommands.UpdateShipModalCustomId + "*")]
+        public async Task UpdateShipModalResponse(string originalName, UpdateShipModal modal) {
             await DeferAsync();
 
             if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: false, out var message)) {
@@ -85,8 +85,9 @@ namespace AzurLaneBBot.Modules.Commands.Management {
                     CupSize = modal.Cupsize,
                     CoverageType = modal.CoverageType,
                     Shape = modal.Shape,
-                    ImageUrl = ""
-                });
+                }, originalName);
+
+                await FollowupAsync($"Succesfully updated {modal.Name}");
             } catch (Exception ex) {
                 await FollowupAsync($"Encountered an error while trying to add the ship to the database, error: {ex.Message}", ephemeral: true);
             }

@@ -58,7 +58,18 @@ namespace AzurLaneBBot.Database.DatabaseServices {
         }
 
         public BoobaBotProject UpdateBBShip(BoobaBotProject updatedShip) {
-            var originalEntry = GetBBPShip(updatedShip.Name!);
+            return UpdateShip(updatedShip, updatedShip.Name!);
+        }
+
+        public BoobaBotProject UpdateBBShip(BoobaBotProject updatedShip, string originalName) {
+            return UpdateShip(updatedShip, originalName);
+        }
+
+        private BoobaBotProject UpdateShip(BoobaBotProject updatedShip, string originalName) {
+            var originalEntry = GetBBPShip(originalName);
+
+            updatedShip.ImageUrl = originalEntry!.ImageUrl;
+            updatedShip.Id = originalEntry!.Id;
 
             var updatedEntry = _entityEntryWrapper.Update(originalEntry!, updatedShip);
 
@@ -68,9 +79,9 @@ namespace AzurLaneBBot.Database.DatabaseServices {
         }
 
         public bool DeleteBBShip(string shipToDeleteName) {
-            var toDeleteEntry = GetBBPShip(shipToDeleteName) 
+            var toDeleteEntry = GetBBPShip(shipToDeleteName)
                 ?? throw new ArgumentException("Provided ship name did not exist in database", nameof(shipToDeleteName));
-            
+
             _dbContext.Remove(toDeleteEntry);
 
             _dbContext.SaveChanges();

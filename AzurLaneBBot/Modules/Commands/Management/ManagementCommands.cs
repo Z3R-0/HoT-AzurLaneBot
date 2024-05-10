@@ -18,7 +18,7 @@ namespace AzurLaneBBot.Modules.Commands.Management {
         // Modal Ids
         public const string AddShipModalCustomId = "add_ship_modal";
         public const string AddSkinModalCustomId = "add_skin_modal";
-        public const string UpdateShipModalCustomId = "update_ship_modal";
+        public const string UpdateShipModalCustomId = "update_ship_modal:";
         // Button Ids
         public const string PreviousButtonCustomId = "prev_button:";
         public const string NextButtonCustomId = "next_button:";
@@ -44,13 +44,13 @@ namespace AzurLaneBBot.Modules.Commands.Management {
         }
 
         [SlashCommand("update-ship", "Update a ship from the database")]
-        public async Task HandleUpdateShipSlash() {
+        public async Task HandleUpdateShipSlash(string originalName) {
             if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
                 await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
                 return;
             }
 
-            await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId);
+            await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId + originalName);
         }
 
         [SlashCommand("delete-ship", "Remove a ship/skin from the database")]
