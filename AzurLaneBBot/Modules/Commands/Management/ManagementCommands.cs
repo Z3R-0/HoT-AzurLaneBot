@@ -87,7 +87,11 @@ namespace AzurLaneBBot.Modules.Commands.Management {
                 imageData = await httpClient.GetByteArrayAsync(imageUrl.Url);
             }
 
-            var fileName = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\Images\\{shipName}.png";
+            var fileName = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}" +
+                $"{Path.DirectorySeparatorChar}" +
+                $"Images" +
+                $"{Path.DirectorySeparatorChar}" +
+                $"{shipName}.png";
 
             if (File.Exists(fileName) && Override == "no") {
                 await FollowupAsync("This ship already has an image, " +

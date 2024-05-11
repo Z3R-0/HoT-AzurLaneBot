@@ -4,7 +4,9 @@ using System.Reflection;
 namespace AzurLaneBBot.Database.ImageServices {
     public class ImageService(IDatabaseService databaseService) : IImageService {
 
-        protected const string _imageLocation = "\\Images\\";
+        protected static readonly string _imageLocation = $"{Path.DirectorySeparatorChar}" +
+                                                "Images" +
+                                                $"{Path.DirectorySeparatorChar}";
         private IDatabaseService _databaseService = databaseService;
 
         public ShipImage? GetImage(string shipName) {
