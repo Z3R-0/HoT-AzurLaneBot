@@ -14,8 +14,8 @@ namespace AzurLaneBBotTests {
             var expectedURL = "theExpectedURL";
             var actualURL = "theExpectedURL";
 
-            Mock<AzurlanedbContext> mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
-                new BoobaBotProject() {
+            var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
+                new() {
                     Rarity = "Test",
                     IsSkinOf = "",
                     Name = shipName,
@@ -43,7 +43,7 @@ namespace AzurLaneBBotTests {
             var shipName = "TestShip";
             var expectedURL = "theExpectedURL";
 
-            Mock<AzurlanedbContext> mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
+            var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
 
             var dbService = new AzurDbContextDatabaseService(mockDatabaseContext.Object);
 
@@ -60,10 +60,10 @@ namespace AzurLaneBBotTests {
         public void StoreImage_HappyFlow_ReturnsSuccess() {
             // Arrange
             var shipName = "TestShip";
-            var imagePath = $"\\Images\\{shipName}.png";
+            var imagePath = $"{Path.DirectorySeparatorChar}Images{Path.DirectorySeparatorChar}{shipName}.png";
 
             var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
-                new BoobaBotProject() {
+                new() {
                     Rarity = "Test",
                     IsSkinOf = "",
                     Name = shipName,
@@ -89,7 +89,7 @@ namespace AzurLaneBBotTests {
         public void StoreImage_UnhappyFlow_ReturnsFalse() {
             // Arrange
             var shipName = "TestShip";
-            var imagePath = $"\\Images\\{shipName}.png";
+            var imagePath = $"{Path.DirectorySeparatorChar}Images{Path.DirectorySeparatorChar}{shipName}.png";
 
             var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() { }.AsQueryable());
 
