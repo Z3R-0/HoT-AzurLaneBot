@@ -1,7 +1,6 @@
 ﻿using AzurApiLibrary;
 using AzurLaneBBot.Database.DatabaseServices;
 using AzurLaneBBot.Database.ImageServices;
-using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
@@ -12,7 +11,7 @@ namespace AzurLaneBBot.Modules.Commands.Test {
         private readonly IAzurClient _azurClient = azurClient;
         private readonly IImageService _imageService = imageService;
 
-        [SlashCommand("test", "Test if the database can be accessed")]
+        [SlashCommand("get-info", "get info on a ship/skin")]
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
@@ -81,17 +80,6 @@ namespace AzurLaneBBot.Modules.Commands.Test {
         [SlashCommand("ping", "Use to check if the bot is online without sending messages into a channel")]
         public async Task HandlePingAsync() {
             await RespondAsync("Pong!", ephemeral: true);
-        }
-
-        [SlashCommand("button", "button command")]
-        public async Task HandleButton() {
-            var btn = new ButtonBuilder {
-                Label = "Click me",
-                CustomId = "click_button",
-                Style = ButtonStyle.Primary,
-            };
-
-            await RespondAsync("Cool button", components: new ComponentBuilder().WithButton(btn).Build());
         }
     }
 }
