@@ -37,8 +37,10 @@ namespace AzurLaneBBot.Modules.Commands.Game {
             embedBuilder.WithImageUrl(randShipImage!.ImageUrl);
             embedBuilder.AddField("Caution!", "Only click the button once you are ready to answer", inline: true);
 
+            var ranShipName = string.IsNullOrEmpty(randShip.IsSkinOf) ? randShip.Name : randShip.IsSkinOf;
+
             var componentBuilder = new ComponentBuilder()
-                .WithButton("Submit answer", GuessShipButtonId + randShip.IsSkinOf ?? randShip.Name);
+                .WithButton("Submit answer", GuessShipButtonId + ranShipName);
 
             await FollowupWithFileAsync(randShipImage.FilePath, embed: embedBuilder.Build(), components: componentBuilder.Build());
         }
