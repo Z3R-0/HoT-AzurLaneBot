@@ -23,7 +23,10 @@ namespace AzurLaneBBot.Database.DatabaseServices {
         public BoobaBotProject? GetBBPShip(string name) {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            return _dbContext.BoobaBotProjects.Where(b => b.Name!.ToLower().Equals(name.ToLower())).FirstOrDefault();
+            // EFCore/LINGQ does _not_ support StringComparison in string.Equals calls, so get the list in memory and then query it.
+            // Relevant due to German alphabet letters (Ä, ẞ, etc...)
+            var allShips = _dbContext.BoobaBotProjects.ToList();
+            return allShips.FirstOrDefault(b => string.Equals(b.Name, name, StringComparison.OrdinalIgnoreCase));
         }
 
         public IEnumerable<BoobaBotProject> GetAllBBPShips() {

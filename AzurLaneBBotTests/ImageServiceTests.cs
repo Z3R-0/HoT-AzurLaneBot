@@ -60,7 +60,7 @@ namespace AzurLaneBBotTests {
         public void StoreImage_HappyFlow_ReturnsSuccess() {
             // Arrange
             var shipName = "TestShip";
-            var imagePath = $"{Path.DirectorySeparatorChar}Images{Path.DirectorySeparatorChar}{shipName}.png";
+            var expectedName = shipName;
 
             var mockDatabaseContext = GenerateMockContext(new List<BoobaBotProject>() {
                 new() {
@@ -82,7 +82,7 @@ namespace AzurLaneBBotTests {
 
             // Assert
             Assert.IsTrue(result);
-            Assert.AreEqual(imagePath, dbService.GetBBPShip(shipName)?.ImageUrl);
+            Assert.AreEqual(expectedName, dbService.GetBBPShip(shipName)?.ImageUrl);
         }
 
         [TestMethod]

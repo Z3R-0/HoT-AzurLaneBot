@@ -14,7 +14,7 @@ namespace AzurLaneBBot.Database.ImageServices {
 
             if (ship == null || string.IsNullOrEmpty(ship?.ImageUrl)) return null;
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + ship.ImageUrl;
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + _imageLocation + ship.ImageUrl + ".png";
 
             return new ShipImage(shipName, $"attachment://{shipName}.png", filePath);
         }
@@ -24,11 +24,7 @@ namespace AzurLaneBBot.Database.ImageServices {
 
             if (ship == null) return false;
 
-            return _databaseService.UpdateBBShipImageURL(shipName, ShipNameToImageLocation(shipName));
-        }
-
-        private static string ShipNameToImageLocation(string shipName) {
-            return _imageLocation + shipName + ".png";
+            return _databaseService.UpdateBBShipImageURL(shipName, shipName);
         }
     }
 }
