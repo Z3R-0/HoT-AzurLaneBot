@@ -72,14 +72,22 @@ namespace AzurLaneBBot.Modules.Commands.Management {
         }
 
         [SlashCommand("upload-image", "Upload an image for a ship")]
-        public async Task HandleUploadImageSlash(IAttachment imageUrl, string shipName,
+        public async Task HandleUploadImageSlash(
+            IAttachment imageUrl,
+            string shipName,
             [Choice("Yes", "yes"), Choice("No", "no")] string Override) {
+
             if (!Path.GetExtension(imageUrl.Url).Contains("png")) {
                 await RespondAsync("We only take PNG format images, try again...", ephemeral: true);
                 return;
             }
 
             await DeferAsync(ephemeral: true);
+
+            if (_dbService.GetBBPShip(shipName) == null) {
+                await FollowupAsync("The ship you tried uploading an image for does not exist in the database", ephemeral: true);
+                return;
+            }
 
             // Download the image data
             byte[] imageData;
