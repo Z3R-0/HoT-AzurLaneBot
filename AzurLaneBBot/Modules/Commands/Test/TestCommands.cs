@@ -15,25 +15,26 @@ namespace AzurLaneBBot.Modules.Commands.Test {
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
-                var testEntry = _dbService.GetBBPShip(shipName) ?? throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
+
+                var infoEntry = _dbService.GetBBPShip(shipName) ?? throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
 
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 
                 var isSkinOf = "";
-                if (testEntry.IsSkinOf != null) {
-                    isSkinOf = $"\nIsSkinOf: {testEntry.IsSkinOf}";
+                if (infoEntry.IsSkinOf != null) {
+                    isSkinOf = $"\nIsSkinOf: {infoEntry.IsSkinOf}";
                 }
 
-                embed.AddField("Data", $"Retrieved stats from: {testEntry.Name}\n\nRarity: {testEntry.Rarity}" + isSkinOf + $"\nCup size: {testEntry.CupSize}\n" +
-                                   $"Coverage type: {testEntry.CoverageType}\nShape: {testEntry.Shape}");
+                embed.AddField("Data", $"Retrieved stats from: {infoEntry.Name}\n\nRarity: {infoEntry.Rarity}" + isSkinOf + $"\nCup size: {infoEntry.CupSize}\n" +
+                                   $"Coverage type: {infoEntry.CoverageType}\nShape: {infoEntry.Shape}");
 
-                if (string.IsNullOrEmpty(testEntry.IsSkinOf)) {
+                if (string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
                     var image = await _azurClient.GetShipAsync(shipName);
 
                     if (image != null)
                         embed.WithImageUrl(image.Thumbnail);
                 } else {
-                    var shipSkin = (await _azurClient.GetShipAsync(testEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
+                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
                     if (shipSkin != null)
                         embed.WithImageUrl(shipSkin.Image);
                 }
