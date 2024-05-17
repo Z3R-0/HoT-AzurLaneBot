@@ -28,6 +28,7 @@ namespace AzurLaneBBot {
 
             ConfigureRequiredServices(serviceProvider);
 
+            // Log unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += Domain_UnhandledException;
 
             await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
