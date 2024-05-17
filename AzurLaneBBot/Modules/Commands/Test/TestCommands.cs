@@ -21,7 +21,7 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 
                 var isSkinOf = "";
-                if (infoEntry.IsSkinOf != null) {
+                if (!string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
                     isSkinOf = $"\nIsSkinOf: {infoEntry.IsSkinOf}";
                 }
 
@@ -34,7 +34,7 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                     if (image != null)
                         embed.WithImageUrl(image.Thumbnail);
                 } else {
-                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName).FirstOrDefault();
+                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName)?.FirstOrDefault();
                     if (shipSkin != null)
                         embed.WithImageUrl(shipSkin.Image);
                 }
