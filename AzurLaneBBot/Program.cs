@@ -28,8 +28,17 @@ namespace AzurLaneBBot {
 
             ConfigureRequiredServices(serviceProvider);
 
+            // Log unhandled exceptions
+            AppDomain.CurrentDomain.UnhandledException += Domain_UnhandledException;
+
             await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
             await serviceProvider.GetRequiredService<Bot>().RunAsync();
+        }
+
+        private static void Domain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+            var exc = (Exception)e.ExceptionObject;
+
+            Logger.Log($"Caught unhandled exception: {exc.Message}");
         }
 
         private static DiscordSocketConfig BuildDiscordSocketConfig() {
