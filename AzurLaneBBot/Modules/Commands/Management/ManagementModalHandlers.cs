@@ -4,14 +4,17 @@ using AzurLaneBBot.Modules.Commands.Modals;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
+using System.Text.RegularExpressions;
 
 namespace AzurLaneBBot.Modules.Commands.Management {
-    public class ManagementModalHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
+    public partial class ManagementModalHandlers(IDatabaseService dbService) : BotInteraction<SocketModal> {
         private readonly IDatabaseService _dbService = dbService;
 
         [ModalInteraction(ManagementCommands.AddShipModalCustomId)]
         public async Task AddShipModalResponse(AddShipModal modal) {
             await DeferAsync();
+
+            modal.Name = AlphanumericPlusGermanRegex().Replace(modal.Name, string.Empty);
 
             if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: true, out var message)) {
                 await FollowupAsync(message, ephemeral: true);
@@ -43,6 +46,8 @@ namespace AzurLaneBBot.Modules.Commands.Management {
         public async Task AddSkinModalResponse(AddSkinModal modal) {
             await DeferAsync();
 
+            modal.Name = AlphanumericPlusGermanRegex().Replace(modal.Name, string.Empty);
+
             if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: true, out var message)) {
                 await FollowupAsync(message, ephemeral: true);
                 return;
@@ -72,6 +77,8 @@ namespace AzurLaneBBot.Modules.Commands.Management {
         [ModalInteraction(ManagementCommands.UpdateShipModalCustomId + "*")]
         public async Task UpdateShipModalResponse(string originalName, UpdateShipModal modal) {
             await DeferAsync();
+
+            modal.Name = AlphanumericPlusGermanRegex().Replace(modal.Name, string.Empty);
 
             if (!VerifyInput([modal.Name, modal.Cupsize, modal.CoverageType, modal.Shape], isAdd: false, out var message)) {
                 await FollowupAsync(message, ephemeral: true);
@@ -113,5 +120,8 @@ namespace AzurLaneBBot.Modules.Commands.Management {
             message = "No issues found with input";
             return true;
         }
+
+        [GeneratedRegex(@"[^a-zA-Z0-9äöüÄÖÜẞ ]")]
+        private static partial Regex AlphanumericPlusGermanRegex();
     }
 }
