@@ -4,6 +4,7 @@ using AzurLaneBBot.Database.ImageServices;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
+using System.Text.RegularExpressions;
 
 namespace AzurLaneBBot.Modules.Commands.Test {
     public class TestCommands(IDatabaseService dbService, IAzurClient azurClient, IImageService imageService) : BotInteraction<SocketSlashCommand> {
@@ -16,17 +17,23 @@ namespace AzurLaneBBot.Modules.Commands.Test {
             try {
                 await DeferAsync();
 
+                shipName = Regex.Replace(shipName, @"[^a-zA-Z0-9äöüÄÖÜẞ ]", string.Empty);
+
                 var infoEntry = _dbService.GetBBPShip(shipName) ?? throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
 
                 var embed = DiscordUtilityMethods.GetEmbedBuilder("Database test result:");
 
                 var isSkinOf = "";
                 if (!string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
-                    isSkinOf = $"\nIsSkinOf: {infoEntry.IsSkinOf}";
+                    isSkinOf = $"**Is skin of**: {infoEntry.IsSkinOf}\n";
                 }
 
-                embed.AddField("Data", $"Retrieved stats from: {infoEntry.Name}\n\nRarity: {infoEntry.Rarity}" + isSkinOf + $"\nCup size: {infoEntry.CupSize}\n" +
-                                   $"Coverage type: {infoEntry.CoverageType}\nShape: {infoEntry.Shape}");
+                embed.Title = $"{infoEntry.Name}'s stats";
+                embed.Description = $"{(isSkinOf == null ? "**Rarity**:" + infoEntry.Rarity + "\n" : "")}"
+                                    + isSkinOf +
+                                    $"**Cup size**: {infoEntry.CupSize}\n" +
+                                    $"**Coverage type**: {infoEntry.CoverageType}\n" +
+                                    $"**Shape**: {infoEntry.Shape}";
 
                 if (string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
                     var image = await _azurClient.GetShipAsync(shipName);
@@ -34,7 +41,7 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                     if (image != null)
                         embed.WithImageUrl(image.Thumbnail);
                 } else {
-                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName)?.FirstOrDefault();
+                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => Regex.Replace(skin.Name, @"[^a-zA-Z0-9äöüÄÖÜẞ ]", string.Empty) == shipName)?.FirstOrDefault();
                     if (shipSkin != null)
                         embed.WithImageUrl(shipSkin.Image);
                 }
