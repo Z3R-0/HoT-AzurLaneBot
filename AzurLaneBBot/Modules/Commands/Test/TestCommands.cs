@@ -22,11 +22,15 @@ namespace AzurLaneBBot.Modules.Commands.Test {
 
                 var isSkinOf = "";
                 if (!string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
-                    isSkinOf = $"\nIsSkinOf: {infoEntry.IsSkinOf}";
+                    isSkinOf = $"**Is skin of**: {infoEntry.IsSkinOf}\n";
                 }
 
-                embed.AddField("Data", $"Retrieved stats from: {infoEntry.Name}\n\nRarity: {infoEntry.Rarity}" + isSkinOf + $"\nCup size: {infoEntry.CupSize}\n" +
-                                   $"Coverage type: {infoEntry.CoverageType}\nShape: {infoEntry.Shape}");
+                embed.Title = $"{infoEntry.Name}'s stats";
+                embed.Description = $"{(isSkinOf == null ? "**Rarity**:" + infoEntry.Rarity + "\n" : "")}"
+                                    + isSkinOf +
+                                    $"**Cup size**: {infoEntry.CupSize}\n" +
+                                    $"**Coverage type**: {infoEntry.CoverageType}\n" +
+                                    $"**Shape**: {infoEntry.Shape}";
 
                 if (string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
                     var image = await _azurClient.GetShipAsync(shipName);
