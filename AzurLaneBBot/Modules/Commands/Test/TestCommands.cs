@@ -4,6 +4,7 @@ using AzurLaneBBot.Database.ImageServices;
 using Discord.Interactions;
 using Discord.WebSocket;
 using ReshDiscordNetLibrary;
+using System.Text.RegularExpressions;
 
 namespace AzurLaneBBot.Modules.Commands.Test {
     public class TestCommands(IDatabaseService dbService, IAzurClient azurClient, IImageService imageService) : BotInteraction<SocketSlashCommand> {
@@ -15,6 +16,8 @@ namespace AzurLaneBBot.Modules.Commands.Test {
         public async Task HandleTestSlash(string shipName) {
             try {
                 await DeferAsync();
+
+                shipName = Regex.Replace(shipName, @"[^a-zA-Z0-9äöüÄÖÜẞ ]", string.Empty);
 
                 var infoEntry = _dbService.GetBBPShip(shipName) ?? throw new ArgumentException($"Couldn't find an entry named: {shipName}, make sure it is present in the Name column of the database");
 
@@ -38,7 +41,7 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                     if (image != null)
                         embed.WithImageUrl(image.Thumbnail);
                 } else {
-                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => skin.Name == shipName)?.FirstOrDefault();
+                    var shipSkin = (await _azurClient.GetShipAsync(infoEntry.IsSkinOf)).Skins.Where(skin => Regex.Replace(skin.Name, @"[^a-zA-Z0-9äöüÄÖÜẞ ]", string.Empty) == shipName)?.FirstOrDefault();
                     if (shipSkin != null)
                         embed.WithImageUrl(shipSkin.Image);
                 }
