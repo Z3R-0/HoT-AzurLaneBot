@@ -35,6 +35,24 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                                     $"**Coverage type**: {infoEntry.CoverageType}\n" +
                                     $"**Shape**: {infoEntry.Shape}";
 
+
+                if (string.IsNullOrEmpty(infoEntry.ImageUrl)) {
+                    await GetShipImageFromApi(shipName, infoEntry, embed);
+
+                    await FollowupAsync(embed: embed.Build());
+                } else {
+                    var shipImage = _imageService.GetImage(infoEntry.Name!);
+                    if (shipImage == null)
+                        await FollowupAsync(embed: embed.Build());
+                    else
+                        await FollowupWithFileAsync(shipImage.FilePath, embed: embed.Build());
+                }
+            } catch (Exception e) {
+                Logger.Log(e);
+                await FollowupAsync($"Something went wrong while retrieving data from database: {e.Message}", ephemeral: true);
+            }
+
+            async Task GetShipImageFromApi(string shipName, Database.Models.BoobaBotProject infoEntry, Discord.EmbedBuilder embed) {
                 if (string.IsNullOrEmpty(infoEntry.IsSkinOf)) {
                     var image = await _azurClient.GetShipAsync(shipName);
 
@@ -45,11 +63,6 @@ namespace AzurLaneBBot.Modules.Commands.Test {
                     if (shipSkin != null)
                         embed.WithImageUrl(shipSkin.Image);
                 }
-
-                await FollowupAsync(embed: embed.Build());
-            } catch (Exception e) {
-                Logger.Log(e);
-                await FollowupAsync($"Something went wrong while retrieving data from database: {e.Message}", ephemeral: true);
             }
         }
 
