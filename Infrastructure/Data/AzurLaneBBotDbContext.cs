@@ -4,7 +4,7 @@ using Domain.VisualTraitAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
-public class AzurLaneBBotDbContext(DbContextOptions<AzurLaneBBotDbContext> options) : DbContext(options) {
+public class AzurLaneBBotDbContext(DbContextOptions<AzurLaneBBotDbContext> options) : DbContext(options), IApplicationDbContext {
     public DbSet<Ship> Ships => Set<Ship>();
     public DbSet<Skin> Skins => Set<Skin>();
     public DbSet<VisualTrait> VisualTraits => Set<VisualTrait>();

@@ -2,7 +2,8 @@
 
 namespace Domain.VisualTraitAggregate;
 
-public class SkinVisualTrait {
+public class SkinVisualTrait : IEntity {
+    public Guid Id { get; }
     public Guid SkinId { get; set; }
     public required Skin Skin { get; set; }
 

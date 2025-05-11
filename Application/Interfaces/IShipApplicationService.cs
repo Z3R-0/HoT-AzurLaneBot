@@ -1,6 +1,6 @@
 ﻿using Domain.ShipAggregate;
 
-namespace Application;
+namespace Application.Interfaces;
 public interface IShipApplicationService {
     public Task RegisterShipAsync(Ship ship);
 

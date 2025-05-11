@@ -1,14 +1,18 @@
 ﻿using Application.DTO;
+using Application.Interfaces;
 
 namespace Application;
-public class GameApplicationService(IShipApplicationService shipApplicationService) : IGameApplicationService {
+public class GameApplicationService(IShipApplicationService shipApplicationService, IImageApplicationService imageService) : IGameApplicationService {
     private readonly IShipApplicationService _shipApplicationService = shipApplicationService;
+    private readonly IImageApplicationService _imageService = imageService;
 
     public async Task<GuessShipGameResult?> StartGuessShipGameAsync(bool allowSkins) {
         var ship = await _shipApplicationService.GetRandomShip(allowSkins);
         if (ship == null) return null;
 
-        var image = _imageService.GetImage(ship.Name); // TODO
+        var image = await _imageService.GetImage(ship.Name);
+        if (image == null) return null;
+
         return new GuessShipGameResult {
             Ship = ship,
             ImageUrl = image.ImageUrl,
