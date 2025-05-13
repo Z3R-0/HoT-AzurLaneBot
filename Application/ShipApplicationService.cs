@@ -8,7 +8,7 @@ public class ShipApplicationService(IShipRepository shipRepository, IUnitOfWork 
     private readonly IShipRepository _shipRepository = shipRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<Ship?> GetRandomShip(bool allowSkins) {
+    public async Task<Ship?> GetRandomShipAsync(bool allowSkins) {
         IEnumerable<Ship> possibleShips = [];
         if (allowSkins) {
             possibleShips = from ship in await _shipRepository.GetAllAsync()
@@ -16,7 +16,7 @@ public class ShipApplicationService(IShipRepository shipRepository, IUnitOfWork 
         }
 
         if (!possibleShips.Any())
-            throw new InvalidOperationException("No ships available to select from.");
+            return null;
 
         var index = Random.Shared.Next(possibleShips.Count());
         return possibleShips.ElementAt(index);
