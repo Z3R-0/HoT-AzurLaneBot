@@ -2,27 +2,24 @@
 using Application.Interfaces;
 using Domain.Interfaces;
 using Domain.SkinAggregate;
-using System.Reflection;
 
 namespace Application;
-public class SkinApplicationService(IUnitOfWork unitOfWork,
+public class SkinApplicationService(
+    IUnitOfWork unitOfWork,
     ISkinRepository skinRepository,
-    IShipRepository shipRepository)
-    : ISkinApplicationService {
-
-    protected static readonly string _imageLocation = $"{Path.DirectorySeparatorChar}" +
-                                            "Images" +
-                                            $"{Path.DirectorySeparatorChar}";
+    IShipRepository shipRepository,
+    IImageStorageService imageStorageService) : ISkinApplicationService {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISkinRepository _skinRepository = skinRepository;
     private readonly IShipRepository _shipRepository = shipRepository;
+    private readonly IImageStorageService _imageStorageService = imageStorageService;
 
     public async Task<ShipImage?> GetImageAsync(string skinName) {
-        var skin = (await _skinRepository.GetByNameAsync(skinName));
+        var skin = await _skinRepository.GetByNameAsync(skinName);
 
         if (skin == null) return null;
 
-        var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + _imageLocation + skin.ImageUrl + ".png";
+        var filePath = _imageStorageService.GetImagePath(skin.ImageUrl.Replace("/Images/", ""));
 
         return new ShipImage {
             ShipName = skinName,
@@ -38,32 +35,45 @@ public class SkinApplicationService(IUnitOfWork unitOfWork,
         if (ship == null)
             return (false, $"No ship found with name '{dto.ShipName}'.");
 
-        var skin = new Skin {
-            Name = skinName,
-            Ship = ship,
-            ShipId = ship.Id,
-            ImageUrl = skinName,
-            CoverageType = dto.CoverageType,
-            CupSize = dto.CupSize,
-            Shape = dto.Shape
-        };
+        var existingSkin = await _skinRepository.GetByNameAsync(skinName);
+
+        var fileName = skinName + ".png";
+        var imageUrl = $"/Images/{fileName}";
+
+        Skin skin;
+        if (existingSkin != null) {
+            skin = existingSkin;
+        } else {
+            skin = new Skin {
+                Name = skinName,
+                Ship = ship,
+                ShipId = ship.Id,
+                ImageUrl = imageUrl,
+                CoverageType = dto.CoverageType,
+                CupSize = dto.CupSize,
+                Shape = dto.Shape
+            };
+        }
+
+        // Always update these fields, even for an existing skin (overwrite logic)
+        skin.ImageUrl = imageUrl;
+        skin.CoverageType = dto.CoverageType;
+        skin.CupSize = dto.CupSize;
+        skin.Shape = dto.Shape;
 
         try {
-            await SaveImage(dto.ImageData, skinName);
-            await _skinRepository.AddAsync(skin);
+            await _imageStorageService.SaveImageAsync(dto.ImageData, fileName);
+
+            if (existingSkin == null)
+                await _skinRepository.AddAsync(skin);
+            else
+                await _skinRepository.UpdateAsync(skin);
+
             await _unitOfWork.SaveChangesAsync();
         } catch (Exception ex) {
-            return (false, $"An error occurred while saving the skin to the database, error: {ex.Message}");
+            return (false, $"An error occurred while saving the skin or image: {ex.Message}");
         }
+
         return (true, $"Skin '{skinName}' successfully registered for ship '{dto.ShipName}'.");
-    }
-
-    private static async Task SaveImage(byte[] imageData, string fileName) {
-        var imageDirectory = Path.Combine(AppContext.BaseDirectory, "Images");
-        Directory.CreateDirectory(imageDirectory);
-
-        var imagePath = Path.Combine(imageDirectory, fileName);
-
-        await File.WriteAllBytesAsync(imagePath, imageData);
     }
 }
