@@ -1,0 +1,120 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class InitialCreate : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "Ships",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Rarity = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ships", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VisualTraits",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TraitType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VisualTraits", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Skins",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
+                    CoverageType = table.Column<int>(type: "INTEGER", nullable: false),
+                    CupSize = table.Column<int>(type: "INTEGER", nullable: false),
+                    Shape = table.Column<int>(type: "INTEGER", nullable: false),
+                    ShipId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skins", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Skins_Ships_ShipId",
+                        column: x => x.ShipId,
+                        principalTable: "Ships",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SkinVisualTraits",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    SkinId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    VisualTraitId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkinVisualTraits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SkinVisualTraits_Skins_SkinId",
+                        column: x => x.SkinId,
+                        principalTable: "Skins",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SkinVisualTraits_VisualTraits_VisualTraitId",
+                        column: x => x.VisualTraitId,
+                        principalTable: "VisualTraits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skins_ShipId",
+                table: "Skins",
+                column: "ShipId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SkinVisualTraits_SkinId",
+                table: "SkinVisualTraits",
+                column: "SkinId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SkinVisualTraits_VisualTraitId",
+                table: "SkinVisualTraits",
+                column: "VisualTraitId");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "SkinVisualTraits");
+
+            migrationBuilder.DropTable(
+                name: "Skins");
+
+            migrationBuilder.DropTable(
+                name: "VisualTraits");
+
+            migrationBuilder.DropTable(
+                name: "Ships");
+        }
+    }
+}
