@@ -104,9 +104,9 @@ public class ManagementCommands(
             if (success)
                 await FollowupAsync($"Successfully uploaded skin");
             else
-                await FollowupAsync($"Error: {message}");
+                await FollowupAsync($"{message}", ephemeral: true);
         } catch (Exception ex) {
-            await FollowupAsync("An unexpected error occurred while processing your request.\n" +
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
                                 $"```{ex.Message}```");
         }
     }
