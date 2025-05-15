@@ -7,6 +7,6 @@ namespace Infrastructure.Repositories;
 public class EfSkinRepository(IApplicationDbContext context) : GenericRepository<Skin>(context), ISkinRepository {
     public async Task<Skin?> GetByNameAsync(string name) {
         return await _context.Skins
-            .FirstOrDefaultAsync(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+            .FirstOrDefaultAsync(s => s.Name.ToLower().Equals(name.ToLower()));
     }
 }

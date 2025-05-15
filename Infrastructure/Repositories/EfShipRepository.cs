@@ -9,7 +9,7 @@ public class EfShipRepository(IApplicationDbContext context) : GenericRepository
     public async Task<Ship?> GetByNameAsync(string name) {
         return await _context.Ships
             .Include(s => s.Skins)
-            .FirstOrDefaultAsync(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+            .FirstOrDefaultAsync(s => s.Name.ToLower().Equals(name.ToLower()));
     }
 
     public async Task<IEnumerable<Ship>> GetAllAsync(bool includeSkins = true) {
