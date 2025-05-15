@@ -107,7 +107,7 @@ public class ManagementCommands(
                 await FollowupAsync($"{message}", ephemeral: true);
         } catch (Exception ex) {
             await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
-                                $"```{ex.Message}```");
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
         }
     }
 

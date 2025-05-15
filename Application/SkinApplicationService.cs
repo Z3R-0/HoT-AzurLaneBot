@@ -46,7 +46,6 @@ public class SkinApplicationService(
         } else {
             skin = new Skin {
                 Name = skinName,
-                Ship = ship,
                 ShipId = ship.Id,
                 ImageUrl = imageUrl,
                 CoverageType = dto.CoverageType,

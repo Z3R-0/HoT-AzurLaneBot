@@ -17,7 +17,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Rarity = table.Column<int>(type: "INTEGER", nullable: false)
+                    Rarity = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,7 +29,7 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TraitType = table.Column<int>(type: "INTEGER", nullable: false),
+                    TraitType = table.Column<string>(type: "TEXT", nullable: false),
                     Value = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -44,9 +44,9 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    CoverageType = table.Column<int>(type: "INTEGER", nullable: false),
-                    CupSize = table.Column<int>(type: "INTEGER", nullable: false),
-                    Shape = table.Column<int>(type: "INTEGER", nullable: false),
+                    CoverageType = table.Column<string>(type: "TEXT", nullable: false),
+                    CupSize = table.Column<string>(type: "TEXT", nullable: false),
+                    Shape = table.Column<string>(type: "TEXT", nullable: false),
                     ShipId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -57,7 +57,7 @@ namespace Infrastructure.Migrations
                         column: x => x.ShipId,
                         principalTable: "Ships",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

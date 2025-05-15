@@ -85,7 +85,6 @@ public class SkinApplicationServiceTests {
                                .With(s => s.Name, "Ship1").Create();
             var existingSkin = _fixture.Build<Skin>()
                                        .With(s => s.Name, "ExistingSkin")
-                                       .With(s => s.Ship, ship)
                                        .With(s => s.ShipId, ship.Id)
                                        .Create();
 
@@ -127,11 +126,10 @@ public class SkinApplicationServiceTests {
                 .ThrowsAsync(new IOException("Disk full"));
 
             // Act
-            var (success, message) = await _service.RegisterSkinAsync(dto);
+            var action = async () => await _service.RegisterSkinAsync(dto);
 
             // Assert
-            success.Should().BeFalse();
-            message.Should().Contain("error");
+            await action.Should().ThrowAsync<IOException>();
             _skinRepoMock.Verify(r => r.AddAsync(It.IsAny<Skin>()), Times.Never);
             _uowMock.Verify(u => u.SaveChangesAsync(default), Times.Never);
         }

@@ -27,8 +27,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Rarity")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Rarity")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -41,11 +42,13 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("CoverageType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("CoverageType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("CupSize")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("CupSize")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -55,8 +58,9 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Shape")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Shape")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("ShipId")
                         .HasColumnType("TEXT");
@@ -95,8 +99,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("TraitType")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("TraitType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -109,13 +114,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.SkinAggregate.Skin", b =>
                 {
-                    b.HasOne("Domain.ShipAggregate.Ship", "Ship")
-                        .WithMany("Skins")
+                    b.HasOne("Domain.ShipAggregate.Ship", null)
+                        .WithMany()
                         .HasForeignKey("ShipId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Ship");
                 });
 
             modelBuilder.Entity("Domain.VisualTraitAggregate.SkinVisualTrait", b =>
@@ -135,11 +138,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Skin");
 
                     b.Navigation("VisualTrait");
-                });
-
-            modelBuilder.Entity("Domain.ShipAggregate.Ship", b =>
-                {
-                    b.Navigation("Skins");
                 });
 #pragma warning restore 612, 618
         }
