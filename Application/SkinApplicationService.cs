@@ -33,7 +33,7 @@ public class SkinApplicationService(
 
         var ship = await _shipRepository.GetByNameAsync(dto.ShipName);
         if (ship == null)
-            return (false, $"No ship found with name '{dto.ShipName}'.");
+            return (false, $"[Input Error]: No ship found with name '{dto.ShipName}'.");
 
         var existingSkin = await _skinRepository.GetByNameAsync(skinName);
 
@@ -61,18 +61,14 @@ public class SkinApplicationService(
         skin.CupSize = dto.CupSize;
         skin.Shape = dto.Shape;
 
-        try {
-            await _imageStorageService.SaveImageAsync(dto.ImageData, fileName);
+        await _imageStorageService.SaveImageAsync(dto.ImageData, fileName);
 
-            if (existingSkin == null)
-                await _skinRepository.AddAsync(skin);
-            else
-                await _skinRepository.UpdateAsync(skin);
+        if (existingSkin == null)
+            await _skinRepository.AddAsync(skin);
+        else
+            await _skinRepository.UpdateAsync(skin);
 
-            await _unitOfWork.SaveChangesAsync();
-        } catch (Exception ex) {
-            return (false, $"An error occurred while saving the skin or image: {ex.Message}");
-        }
+        await _unitOfWork.SaveChangesAsync();
 
         return (true, $"Skin '{skinName}' successfully registered for ship '{dto.ShipName}'.");
     }
