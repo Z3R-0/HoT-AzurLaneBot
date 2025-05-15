@@ -63,9 +63,9 @@ public static class Program {
         serviceCollection.AddSingleton<InteractionHandler>();
         serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
 
-        // Custom Modules/database
+        // Database
         serviceCollection.AddDbContext<IApplicationDbContext, AzurLaneBBotDbContext>(options => {
-            options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbv2RelativeLocation"]}");
+            options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
         });
         serviceCollection.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
@@ -79,7 +79,7 @@ public static class Program {
         serviceCollection.AddScoped<IShipApplicationService, ShipApplicationService>();
         serviceCollection.AddScoped<IGameApplicationService, GameApplicationService>();
 
-        // Aux service
+        // Aux services
         serviceCollection.AddScoped<IImageStorageService, ImageStorageService>();
 
         // Repositories
