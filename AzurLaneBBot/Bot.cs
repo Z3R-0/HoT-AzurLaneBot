@@ -1,26 +1,32 @@
 ﻿using AzurLaneBBot.Modules.Events;
 using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using ReshDiscordNetLibrary;
-using System.Configuration;
 
 namespace AzurLaneBBot;
 public class Bot {
     private readonly DiscordSocketClient _client;
-
     private readonly Ready _ready;
     private readonly InteractionCreated _interactionCreated;
+    private readonly IConfiguration _configuration;
 
     public static DateTime BotStarted;
 
-    public Bot(DiscordSocketClient client, Ready ready, InteractionCreated interactionCreated) {
+    public Bot(DiscordSocketClient client, Ready ready, InteractionCreated interactionCreated, IConfiguration configuration) {
         _client = client;
         _ready = ready;
         _interactionCreated = interactionCreated;
+        _configuration = configuration;
     }
 
     public async Task RunAsync() {
-        await _client.LoginAsync(TokenType.Bot, ConfigurationManager.AppSettings["token"]);
+        var token = _configuration["DiscordSettings:Token"];
+        if (string.IsNullOrEmpty(token)) {
+            throw new InvalidOperationException("Bot token is not configured.");
+        }
+
+        await _client.LoginAsync(TokenType.Bot, token);
         await _client.SetGameAsync("v2 B) (still gathering waifu data...)");
         await _client.StartAsync();
 

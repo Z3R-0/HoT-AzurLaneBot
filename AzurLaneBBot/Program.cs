@@ -72,6 +72,9 @@ public static class Program {
         serviceCollection.AddSingleton<InteractionHandler>();
         serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
 
+        // Configuration
+        serviceCollection.AddSingleton(Configuration);
+
         // Database
         serviceCollection.AddDbContext<IApplicationDbContext, AzurLaneBBotDbContext>(options => {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
