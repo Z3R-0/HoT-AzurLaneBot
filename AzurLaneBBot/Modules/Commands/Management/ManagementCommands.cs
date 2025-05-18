@@ -1,77 +1,82 @@
 ﻿using Application.DTO;
 using Application.Interfaces;
-using AzurLaneBBot.Database.Models;
-using AzurLaneBBot.Modules.Commands.Modals;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Domain.ShipAggregate.Enums;
 using Domain.SkinAggregate.Enums;
 using ReshDiscordNetLibrary;
 
 namespace AzurLaneBBot.Modules.Commands.Management;
 public class ManagementCommands(
-    ISkinApplicationService skinApplicationService) : BotInteraction<SocketSlashCommand> {
+    ISkinApplicationService skinApplicationService,
+    IShipApplicationService shipApplicationService) : BotInteraction<SocketSlashCommand> {
     private readonly ISkinApplicationService _skinApplicationService = skinApplicationService;
+    private readonly IShipApplicationService _shipApplicationService = shipApplicationService;
 
-    // Consts
-    public const int EntriesPerPage = 10;
-    // Modal Ids
-    public const string AddShipModalCustomId = "add_ship_modal";
-    public const string AddSkinModalCustomId = "add_skin_modal";
-    public const string UpdateShipModalCustomId = "update_ship_modal:";
-    // Button Ids
-    public const string PreviousButtonCustomId = "prev_button:";
-    public const string NextButtonCustomId = "next_button:";
+    [SlashCommand("delete-ship", "Remove a ship from the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task HandleDeleteShipSlash(string shipName) {
+        await DeferAsync();
 
-    [SlashCommand("add-ship", "Add a new ship to the database")]
-    public async Task HandleAddShipSlash() {
-        if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-            await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-            return;
+        try {
+            var (success, message) = await _shipApplicationService.DeleteShipAsync(shipName);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully registered ship '{shipName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
         }
-
-        await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddShipModalCustomId);
     }
 
-    [SlashCommand("add-skin", "Add a new skin to the database")]
-    public async Task HandleAddSkinSlash() {
-        if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-            await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-            return;
-        }
+    [SlashCommand("delete-skin", "Remove a skin from the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task HandleDeleteSkinSlash(string skinName) {
+        await DeferAsync();
 
-        await Context.Interaction.RespondWithModalAsync<AddSkinModal>(AddSkinModalCustomId);
+        try {
+            var (success, message) = await _skinApplicationService.DeleteSkinAsync(skinName);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully registered ship '{skinName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
     }
 
-    [SlashCommand("update-ship", "Update a ship from the database")]
-    public async Task HandleUpdateShipSlash(string originalName) {
-        if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-            await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-            return;
+    [SlashCommand("register-ship", "Register a new ship in the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task RegisterShipAsync(
+    string shipName,
+    Rarity rarity) {
+        await DeferAsync();
+
+        try {
+            var dto = new RegisterShip {
+                ShipName = shipName,
+                Rarity = rarity
+            };
+
+            var (success, message) = await _shipApplicationService.RegisterShipAsync(dto);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully registered ship '{shipName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
         }
-
-        await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId + originalName);
     }
-
-    //[SlashCommand("delete-ship", "Remove a ship/skin from the database")]
-    //public async Task HandleDeleteShipSlash(string shipName) {
-    //    if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-    //        await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-    //        return;
-    //    }
-
-    //    await DeferAsync();
-
-    //    if (_dbService.GetBBPShip(shipName) != null) {
-    //        _dbService.DeleteBBShip(shipName);
-
-    //        await FollowupAsync($"'{shipName}' has been removed from the database", ephemeral: true);
-    //    } else {
-    //        await FollowupAsync($"'{shipName}' was not found in the databse", ephemeral: true);
-    //    }
-    //}
 
     [SlashCommand("register", "Register a new skin for a ship")]
+    [RequireRole("Booba Connoisseur")]
     public async Task RegisterSkinAsync(
     string shipName,
     CoverageType coverageType,
@@ -110,51 +115,4 @@ public class ManagementCommands(
                                 $"```{ex.InnerException?.Message ?? ex.Message}```");
         }
     }
-
-    //[SlashCommand("list-db", "List all database entries")]
-    //public async Task HandleListDbSlash() {
-    //    await DeferAsync();
-
-    //    var entries = _dbService.GetAllBBPShips();
-    //    var totalEntries = entries.Count();
-    //    var totalPages = (totalEntries + EntriesPerPage - 1) / EntriesPerPage;
-
-    //    var pagination = DisplayPage(entries!, 1, totalPages, EntriesPerPage);
-
-    //    await FollowupAsync(embed: pagination.EmbedBuilder.Build(), components: pagination.ComponentBuilder.Build());
-    //}
-
-    public static PaginationResult DisplayPage(IEnumerable<BoobaBotProject> ships, int currentPage, int totalPages, int entriesPerPage) {
-        var embedBuilder = DiscordUtilityMethods.GetEmbedBuilder("Database entries");
-
-        var shipsList = ships
-            .Skip((currentPage - 1) * entriesPerPage)
-            .Take(entriesPerPage)
-            .ToList();
-
-        foreach (var ship in shipsList) {
-            if (string.IsNullOrEmpty(ship.IsSkinOf))
-                embedBuilder.AddField(ship.Name, $"Rarity: {ship.Rarity} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
-            else
-                embedBuilder.AddField(ship.Name, $"Is skin of: {ship.IsSkinOf} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
-        }
-
-        var footerText = $"Page {currentPage}/{totalPages}";
-        embedBuilder.WithFooter(footer => footer.Text = footerText);
-
-        var buttons = new ComponentBuilder();
-        if (currentPage > 1) {
-            buttons.WithButton(new ButtonBuilder("Previous", PreviousButtonCustomId + currentPage, ButtonStyle.Primary));
-        }
-        if (currentPage < totalPages) {
-            buttons.WithButton(new ButtonBuilder("Next", NextButtonCustomId + currentPage, ButtonStyle.Primary));
-        }
-
-        return new PaginationResult { EmbedBuilder = embedBuilder, ComponentBuilder = buttons };
-    }
-}
-
-public class PaginationResult {
-    public required EmbedBuilder EmbedBuilder { get; set; }
-    public required ComponentBuilder ComponentBuilder { get; set; }
 }
