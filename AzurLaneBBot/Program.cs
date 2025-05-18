@@ -14,13 +14,22 @@ using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ReshDiscordNetLibrary;
-using System.Configuration;
 
 namespace AzurLaneBBot;
 public static class Program {
+    private static IConfiguration Configuration;
+
     private static async Task Main() {
+        // Build configuration
+        Configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddUserSecrets(typeof(Program).Assembly)
+            .Build();
+
         Bot.BotStarted = DateTime.Now;
 
         var serviceDescriptors = new ServiceCollection();
@@ -65,7 +74,7 @@ public static class Program {
 
         // Database
         serviceCollection.AddDbContext<IApplicationDbContext, AzurLaneBBotDbContext>(options => {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
             if (string.IsNullOrEmpty(connectionString)) {
                 throw new InvalidOperationException("DefaultConnection string is not configured.");
             }
