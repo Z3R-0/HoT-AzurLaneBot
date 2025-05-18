@@ -65,7 +65,11 @@ public static class Program {
 
         // Database
         serviceCollection.AddDbContext<IApplicationDbContext, AzurLaneBBotDbContext>(options => {
-            options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"]?.ConnectionString;
+            if (string.IsNullOrEmpty(connectionString)) {
+                throw new InvalidOperationException("DefaultConnection string is not configured.");
+            }
+            options.UseSqlServer(connectionString);
         });
         serviceCollection.AddScoped<IUnitOfWork, EfUnitOfWork>();
 

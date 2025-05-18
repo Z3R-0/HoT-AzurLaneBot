@@ -11,10 +11,10 @@ public class AzurLaneBBotDbContextFactory : IDesignTimeDbContextFactory<AzurLane
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var connectionString = config.GetConnectionString("Default");
+        var connectionString = config.GetConnectionString("DefaultConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<AzurLaneBBotDbContext>();
-        optionsBuilder.UseSqlite(connectionString);
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new AzurLaneBBotDbContext(optionsBuilder.Options);
     }
