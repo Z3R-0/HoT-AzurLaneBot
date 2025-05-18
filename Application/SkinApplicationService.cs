@@ -28,6 +28,17 @@ public class SkinApplicationService(
         };
     }
 
+    public async Task<(bool isSuccess, string? Errors)> DeleteSkinAsync(string skinName) {
+        var skin = await _skinRepository.GetByNameAsync(skinName);
+        if (skin == null) {
+            return (false, $"[Input Error]: No skin found with name '{skinName}'.");
+        }
+
+        await _skinRepository.DeleteAsync(skin.Id);
+        await _unitOfWork.SaveChangesAsync();
+        return (true, null);
+    }
+
     public async Task<(bool isSuccess, string? Errors)> RegisterSkinAsync(RegisterSkin dto) {
         var skinName = dto.SkinName ?? dto.ShipName;
 
