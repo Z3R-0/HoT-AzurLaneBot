@@ -28,47 +28,41 @@ public class SkinApplicationService(
         };
     }
 
-    public async Task<(bool, string)> RegisterSkinAsync(RegisterSkin dto) {
+    public async Task<(bool isSuccess, string? Errors)> RegisterSkinAsync(RegisterSkin dto) {
         var skinName = dto.SkinName ?? dto.ShipName;
 
         var ship = await _shipRepository.GetByNameAsync(dto.ShipName);
         if (ship == null)
             return (false, $"[Input Error]: No ship found with name '{dto.ShipName}'.");
-
         var existingSkin = await _skinRepository.GetByNameAsync(skinName);
 
         var fileName = skinName + ".png";
         var imageUrl = $"/Images/{fileName}";
 
-        Skin skin;
         if (existingSkin != null) {
-            skin = existingSkin;
+            existingSkin.ImageUrl = imageUrl;
+            existingSkin.CoverageType = dto.CoverageType;
+            existingSkin.CupSize = dto.CupSize;
+            existingSkin.Shape = dto.Shape;
+
+            await _skinRepository.UpdateAsync(existingSkin);
         } else {
-            skin = new Skin {
+            var newSkin = new Skin {
                 Name = skinName,
-                ShipId = ship.Id,
                 ImageUrl = imageUrl,
                 CoverageType = dto.CoverageType,
                 CupSize = dto.CupSize,
-                Shape = dto.Shape
+                Shape = dto.Shape,
+                ShipId = ship.Id,
             };
-        }
 
-        // Always update these fields, even for an existing skin (overwrite logic)
-        skin.ImageUrl = imageUrl;
-        skin.CoverageType = dto.CoverageType;
-        skin.CupSize = dto.CupSize;
-        skin.Shape = dto.Shape;
+            await _skinRepository.AddAsync(newSkin);
+        }
 
         await _imageStorageService.SaveImageAsync(dto.ImageData, fileName);
 
-        if (existingSkin == null)
-            await _skinRepository.AddAsync(skin);
-        else
-            await _skinRepository.UpdateAsync(skin);
-
         await _unitOfWork.SaveChangesAsync();
 
-        return (true, $"Skin '{skinName}' successfully registered for ship '{dto.ShipName}'.");
+        return (true, null);
     }
 }

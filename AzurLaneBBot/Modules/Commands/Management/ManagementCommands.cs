@@ -80,7 +80,7 @@ public class ManagementCommands(
     IAttachment image,
     string? skinName = null) {
         if (!Path.GetExtension(image.Url).Contains("png")) {
-            await RespondAsync("We only take PNG format images...", ephemeral: true);
+            await RespondAsync("[Input Error]: Only PNG format images are allowed", ephemeral: true);
             return;
         }
 
@@ -102,7 +102,7 @@ public class ManagementCommands(
             var (success, message) = await _skinApplicationService.RegisterSkinAsync(dto);
 
             if (success)
-                await FollowupAsync($"Successfully uploaded skin");
+                await FollowupAsync($"[Success]: Successfully uploaded and registered skin");
             else
                 await FollowupAsync($"{message}", ephemeral: true);
         } catch (Exception ex) {

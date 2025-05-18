@@ -52,7 +52,6 @@ public class SkinApplicationServiceTests {
         public async Task ShouldAddSkin_When_ValidNewSkin() {
             // Arrange
             var ship = _fixture.Build<Ship>()
-                               .OmitAutoProperties() // Prevent circular Ship-Skin dependency
                                .With(s => s.Name, "ExistingShip")
                                .Create();
 
@@ -70,7 +69,7 @@ public class SkinApplicationServiceTests {
 
             // Assert
             success.Should().BeTrue();
-            message.Should().Contain("successfully registered");
+            message.Should().BeNull();
 
             _skinRepoMock.Verify(r => r.AddAsync(It.IsAny<Skin>()), Times.Once);
             _uowMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
@@ -81,7 +80,6 @@ public class SkinApplicationServiceTests {
         public async Task ShouldUpdateSkin_When_SkinAlreadyExists() {
             // Arrange
             var ship = _fixture.Build<Ship>()
-                               .OmitAutoProperties()
                                .With(s => s.Name, "Ship1").Create();
             var existingSkin = _fixture.Build<Skin>()
                                        .With(s => s.Name, "ExistingSkin")
@@ -101,7 +99,7 @@ public class SkinApplicationServiceTests {
 
             // Assert
             success.Should().BeTrue();
-            message.Should().Contain("successfully registered");
+            message.Should().BeNull();
             _skinRepoMock.Verify(r => r.UpdateAsync(existingSkin), Times.Once);
             _skinRepoMock.Verify(r => r.AddAsync(It.IsAny<Skin>()), Times.Never);
             _uowMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
@@ -111,16 +109,24 @@ public class SkinApplicationServiceTests {
         public async Task ShouldReturnFalse_When_ImageSavingFails() {
             // Arrange
             var ship = _fixture.Build<Ship>()
-                               .OmitAutoProperties()
                                .With(s => s.Name, "ShipX").Create();
             var dto = _fixture.Build<RegisterSkin>()
                               .With(d => d.ShipName, ship.Name)
                               .With(d => d.SkinName, "SkinX")
                               .Create();
 
+            var newSkin = new Skin {
+                Name = dto.SkinName!,
+                ImageUrl = $"/Images/{dto.SkinName!}.png",
+                CoverageType = dto.CoverageType,
+                CupSize = dto.CupSize,
+                Shape = dto.Shape,
+                ShipId = ship.Id
+            };
+
             _shipRepoMock.Setup(r => r.GetByNameAsync(ship.Name)).ReturnsAsync(ship);
             _skinRepoMock.Setup(r => r.GetByNameAsync(dto.SkinName!)).ReturnsAsync((Skin?)null);
-
+            _skinRepoMock.Setup(r => r.AddAsync(It.IsAny<Skin>())).Callback<Skin>(s => newSkin = s);
             _imageStorageMock
                 .Setup(x => x.SaveImageAsync(It.IsAny<byte[]>(), It.IsAny<string>()))
                 .ThrowsAsync(new IOException("Disk full"));
@@ -130,15 +136,15 @@ public class SkinApplicationServiceTests {
 
             // Assert
             await action.Should().ThrowAsync<IOException>();
-            _skinRepoMock.Verify(r => r.AddAsync(It.IsAny<Skin>()), Times.Never);
+            _skinRepoMock.Verify(r => r.AddAsync(It.Is<Skin>(s => s.Name == dto.SkinName)), Times.Once);
             _uowMock.Verify(u => u.SaveChangesAsync(default), Times.Never);
+            _imageStorageMock.Verify(i => i.SaveImageAsync(dto.ImageData, dto.SkinName! + ".png"), Times.Once);
         }
 
         [Fact]
         public async Task ShouldUseShipNameAsFallback_When_SkinNameIsNull() {
             // Arrange
             var ship = _fixture.Build<Ship>()
-                               .OmitAutoProperties()
                                .With(s => s.Name, "FallbackShip").Create();
             var dto = _fixture.Build<RegisterSkin>()
                               .Without(d => d.SkinName)
@@ -174,7 +180,6 @@ public class SkinApplicationServiceTests {
         public async Task ShouldReturnShipImage_When_SkinExists() {
             // Arrange
             var skin = _fixture.Build<Skin>()
-                               .OmitAutoProperties()
                                .With(s => s.Name, "Skin1")
                                .With(s => s.ImageUrl, "/Images/Skin1.png")
                                .Create();
