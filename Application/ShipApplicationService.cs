@@ -50,4 +50,12 @@ public class ShipApplicationService(IShipRepository shipRepository, IUnitOfWork 
 
         return (true, null);
     }
+
+    public async Task<Ship?> GetByNameAsync(string shipName) {
+        return await _shipRepository.GetByNameAsync(shipName);
+    }
+
+    public async Task<Ship?> GetByIdAsync(Guid shipId) {
+        return await _shipRepository.GetByIdAsync(shipId);
+    }
 }

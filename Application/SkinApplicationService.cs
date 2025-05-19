@@ -76,4 +76,12 @@ public class SkinApplicationService(
 
         return (true, null);
     }
+
+    public async Task<Skin?> GetByNameAsync(string skinName) {
+        return await _skinRepository.GetByNameAsync(skinName);
+    }
+
+    public async Task<Skin?> GetByIdAsync(Guid skinId) {
+        return await _skinRepository.GetByIdAsync(skinId);
+    }
 }

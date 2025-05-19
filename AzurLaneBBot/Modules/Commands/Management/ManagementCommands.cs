@@ -14,6 +14,44 @@ public class ManagementCommands(
     private readonly ISkinApplicationService _skinApplicationService = skinApplicationService;
     private readonly IShipApplicationService _shipApplicationService = shipApplicationService;
 
+    [SlashCommand("get-info", "Get information about a skin and its related ship")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task GetInfoAsync(string skinName) {
+        await DeferAsync();
+
+        try {
+            // Fetch the skin image details
+            var skin = await _skinApplicationService.GetByNameAsync(skinName);
+            if (skin == null) {
+                await FollowupAsync($"[Input Error]: No skin found with the name '{skinName}'", ephemeral: true);
+                return;
+            }
+
+            var image = await _skinApplicationService.GetImageAsync(skinName);
+
+            // Fetch the related ship details
+            var ship = await _shipApplicationService.GetByIdAsync(skin.ShipId);
+            if (ship == null) {
+                await FollowupAsync($"[Input Error]: No ship found related to the skin '{skinName}'", ephemeral: true);
+                return;
+            }
+
+            // Format and display the information
+            var embed = DiscordUtilityMethods.GetEmbedBuilder($"Skin Information: {skin.Name}")
+                .AddField("Coverage type", skin.CoverageType, true)
+                .AddField("Cup size", skin.CupSize, true)
+                .AddField("Shape", skin.Shape, false)
+                .AddField("Ship Name", ship.Name, true)
+                .AddField("Ship Rarity", ship.Rarity.ToString(), true)
+                .Build();
+
+            await FollowupWithFileAsync(AppDomain.CurrentDomain.BaseDirectory + skin.ImageUrl, embed: embed);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
+    }
+
     [SlashCommand("delete-ship", "Remove a ship from the database")]
     [RequireRole("Booba Connoisseur")]
     public async Task HandleDeleteShipSlash(string shipName) {
@@ -23,7 +61,7 @@ public class ManagementCommands(
             var (success, message) = await _shipApplicationService.DeleteShipAsync(shipName);
 
             if (success)
-                await FollowupAsync($"[Success]: Successfully registered ship '{shipName}'");
+                await FollowupAsync($"[Success]: Successfully deleted ship '{shipName}'");
             else
                 await FollowupAsync($"{message}", ephemeral: true);
         } catch (Exception ex) {
@@ -41,7 +79,7 @@ public class ManagementCommands(
             var (success, message) = await _skinApplicationService.DeleteSkinAsync(skinName);
 
             if (success)
-                await FollowupAsync($"[Success]: Successfully registered ship '{skinName}'");
+                await FollowupAsync($"[Success]: Successfully deleted skin '{skinName}'");
             else
                 await FollowupAsync($"{message}", ephemeral: true);
         } catch (Exception ex) {
@@ -75,7 +113,7 @@ public class ManagementCommands(
         }
     }
 
-    [SlashCommand("register", "Register a new skin for a ship")]
+    [SlashCommand("register-skin", "Register a new skin for a ship")]
     [RequireRole("Booba Connoisseur")]
     public async Task RegisterSkinAsync(
     string shipName,
