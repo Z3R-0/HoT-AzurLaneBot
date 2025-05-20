@@ -20,7 +20,6 @@ public class ManagementCommands(
         await DeferAsync();
 
         try {
-            // Fetch the skin image details
             var skin = await _skinApplicationService.GetByNameAsync(skinName);
             if (skin == null) {
                 await FollowupAsync($"[Input Error]: No skin found with the name '{skinName}'", ephemeral: true);
@@ -29,14 +28,12 @@ public class ManagementCommands(
 
             var image = await _skinApplicationService.GetImageAsync(skinName);
 
-            // Fetch the related ship details
             var ship = await _shipApplicationService.GetByIdAsync(skin.ShipId);
             if (ship == null) {
                 await FollowupAsync($"[Input Error]: No ship found related to the skin '{skinName}'", ephemeral: true);
                 return;
             }
 
-            // Format and display the information
             var embed = DiscordUtilityMethods.GetEmbedBuilder($"Skin Information: {skin.Name}")
                 .AddField("Coverage type", skin.CoverageType, true)
                 .AddField("Cup size", skin.CupSize, true)
