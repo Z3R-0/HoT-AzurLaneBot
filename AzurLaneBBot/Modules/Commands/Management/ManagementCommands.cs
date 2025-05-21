@@ -1,167 +1,153 @@
-﻿using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Database.ImageServices;
-using AzurLaneBBot.Database.Models;
-using AzurLaneBBot.Modules.Commands.Modals;
+﻿using Application.DTO;
+using Application.Interfaces;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Domain.ShipAggregate.Enums;
+using Domain.SkinAggregate.Enums;
 using ReshDiscordNetLibrary;
-using System.Reflection;
 
-namespace AzurLaneBBot.Modules.Commands.Management {
-    public class ManagementCommands(IDatabaseService dbService, IImageService imageService) : BotInteraction<SocketSlashCommand> {
-        private readonly IDatabaseService _dbService = dbService;
-        private readonly IImageService _imageService = imageService;
+namespace AzurLaneBBot.Modules.Commands.Management;
+public class ManagementCommands(
+    ISkinApplicationService skinApplicationService,
+    IShipApplicationService shipApplicationService) : BotInteraction<SocketSlashCommand> {
+    private readonly ISkinApplicationService _skinApplicationService = skinApplicationService;
+    private readonly IShipApplicationService _shipApplicationService = shipApplicationService;
 
-        // Consts
-        public const int EntriesPerPage = 10;
-        // Modal Ids
-        public const string AddShipModalCustomId = "add_ship_modal";
-        public const string AddSkinModalCustomId = "add_skin_modal";
-        public const string UpdateShipModalCustomId = "update_ship_modal:";
-        // Button Ids
-        public const string PreviousButtonCustomId = "prev_button:";
-        public const string NextButtonCustomId = "next_button:";
+    [SlashCommand("get-info", "Get information about a skin and its related ship")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task GetInfoAsync(string skinName) {
+        await DeferAsync();
 
-        [SlashCommand("add-ship", "Add a new ship to the database")]
-        public async Task HandleAddShipSlash() {
-            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
+        try {
+            var skin = await _skinApplicationService.GetByNameAsync(skinName);
+            if (skin == null) {
+                await FollowupAsync($"[Input Error]: No skin found with the name '{skinName}'", ephemeral: true);
                 return;
             }
 
-            await Context.Interaction.RespondWithModalAsync<AddShipModal>(AddShipModalCustomId);
-        }
+            var image = await _skinApplicationService.GetImageAsync(skinName);
 
-        [SlashCommand("add-skin", "Add a new skin to the database")]
-        public async Task HandleAddSkinSlash() {
-            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
+            var ship = await _shipApplicationService.GetByIdAsync(skin.ShipId);
+            if (ship == null) {
+                await FollowupAsync($"[Input Error]: No ship found related to the skin '{skinName}'", ephemeral: true);
                 return;
             }
 
-            await Context.Interaction.RespondWithModalAsync<AddSkinModal>(AddSkinModalCustomId);
-        }
+            var embed = DiscordUtilityMethods.GetEmbedBuilder($"Skin Information: {skin.Name}")
+                .AddField("Coverage type", skin.CoverageType, true)
+                .AddField("Cup size", skin.CupSize, true)
+                .AddField("Shape", skin.Shape, false)
+                .AddField("Ship Name", ship.Name, true)
+                .AddField("Ship Rarity", ship.Rarity.ToString(), true)
+                .Build();
 
-        [SlashCommand("update-ship", "Update a ship from the database")]
-        public async Task HandleUpdateShipSlash(string originalName) {
-            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-                return;
-            }
-
-            await Context.Interaction.RespondWithModalAsync<UpdateShipModal>(UpdateShipModalCustomId + originalName);
-        }
-
-        [SlashCommand("delete-ship", "Remove a ship/skin from the database")]
-        public async Task HandleDeleteShipSlash(string shipName) {
-            if (!(Context.User as SocketGuildUser)!.Roles.Any(r => r.Name != "Booba Connoisseur")) {
-                await FollowupAsync("Sorry, you don't have permission to do that.", ephemeral: true);
-                return;
-            }
-
-            await DeferAsync();
-
-            if (_dbService.GetBBPShip(shipName) != null) {
-                _dbService.DeleteBBShip(shipName);
-
-                await FollowupAsync($"'{shipName}' has been removed from the database", ephemeral: true);
-            } else {
-                await FollowupAsync($"'{shipName}' was not found in the databse", ephemeral: true);
-            }
-        }
-
-        [SlashCommand("upload-image", "Upload an image for a ship")]
-        public async Task HandleUploadImageSlash(
-            IAttachment imageUrl,
-            string shipName,
-            [Choice("Yes", "yes"), Choice("No", "no")] string Override) {
-
-            if (!Path.GetExtension(imageUrl.Url).Contains("png")) {
-                await RespondAsync("We only take PNG format images, try again...", ephemeral: true);
-                return;
-            }
-
-            await DeferAsync(ephemeral: true);
-
-            if (_dbService.GetBBPShip(shipName) == null) {
-                await FollowupAsync("The ship you tried uploading an image for does not exist in the database", ephemeral: true);
-                return;
-            }
-
-            // Download the image data
-            byte[] imageData;
-            using (var httpClient = new HttpClient()) {
-                imageData = await httpClient.GetByteArrayAsync(imageUrl.Url);
-            }
-
-            var fileName = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}" +
-                $"{Path.DirectorySeparatorChar}" +
-                $"Images" +
-                $"{Path.DirectorySeparatorChar}" +
-                $"{shipName}.png";
-
-            if (File.Exists(fileName) && Override == "no") {
-                await FollowupAsync("This ship already has an image, " +
-                    "if you would like to override the image then run the command with Override set to 'Yes'",
-                    ephemeral: true);
-                return;
-            }
-
-            // Save the image data to a file
-            File.WriteAllBytes(fileName, imageData);
-
-            if (_imageService.RegisterImage(shipName))
-                await FollowupAsync($"The image has been saved and set to {shipName}'s image", ephemeral: true);
-            else
-                await FollowupAsync($"The image was saved but could not be linked to the database entry...", ephemeral: true);
-        }
-
-        [SlashCommand("list-db", "List all database entries")]
-        public async Task HandleListDbSlash() {
-            await DeferAsync();
-
-            var entries = _dbService.GetAllBBPShips();
-            var totalEntries = entries.Count();
-            var totalPages = (totalEntries + EntriesPerPage - 1) / EntriesPerPage;
-
-            var pagination = DisplayPage(entries!, 1, totalPages, EntriesPerPage);
-
-            await FollowupAsync(embed: pagination.EmbedBuilder.Build(), components: pagination.ComponentBuilder.Build());
-        }
-
-        public static PaginationResult DisplayPage(IEnumerable<BoobaBotProject> ships, int currentPage, int totalPages, int entriesPerPage) {
-            var embedBuilder = DiscordUtilityMethods.GetEmbedBuilder("Database entries");
-
-            var shipsList = ships
-                .Skip((currentPage - 1) * entriesPerPage)
-                .Take(entriesPerPage)
-                .ToList();
-
-            foreach (var ship in shipsList) {
-                if (string.IsNullOrEmpty(ship.IsSkinOf))
-                    embedBuilder.AddField(ship.Name, $"Rarity: {ship.Rarity} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
-                else
-                    embedBuilder.AddField(ship.Name, $"Is skin of: {ship.IsSkinOf} -- Cup Size: {ship.CupSize} -- Shape: {ship.Shape}");
-            }
-
-            var footerText = $"Page {currentPage}/{totalPages}";
-            embedBuilder.WithFooter(footer => footer.Text = footerText);
-
-            var buttons = new ComponentBuilder();
-            if (currentPage > 1) {
-                buttons.WithButton(new ButtonBuilder("Previous", PreviousButtonCustomId + currentPage, ButtonStyle.Primary));
-            }
-            if (currentPage < totalPages) {
-                buttons.WithButton(new ButtonBuilder("Next", NextButtonCustomId + currentPage, ButtonStyle.Primary));
-            }
-
-            return new PaginationResult { EmbedBuilder = embedBuilder, ComponentBuilder = buttons };
+            await FollowupWithFileAsync(AppDomain.CurrentDomain.BaseDirectory + skin.ImageUrl, embed: embed);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
         }
     }
 
-    public class PaginationResult {
-        public required EmbedBuilder EmbedBuilder { get; set; }
-        public required ComponentBuilder ComponentBuilder { get; set; }
+    [SlashCommand("delete-ship", "Remove a ship from the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task HandleDeleteShipSlash(string shipName) {
+        await DeferAsync();
+
+        try {
+            var (success, message) = await _shipApplicationService.DeleteShipAsync(shipName);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully deleted ship '{shipName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
+    }
+
+    [SlashCommand("delete-skin", "Remove a skin from the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task HandleDeleteSkinSlash(string skinName) {
+        await DeferAsync();
+
+        try {
+            var (success, message) = await _skinApplicationService.DeleteSkinAsync(skinName);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully deleted skin '{skinName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
+    }
+
+    [SlashCommand("register-ship", "Register a new ship in the database")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task RegisterShipAsync(
+    string shipName,
+    Rarity rarity) {
+        await DeferAsync();
+
+        try {
+            var dto = new RegisterShip {
+                ShipName = shipName,
+                Rarity = rarity
+            };
+
+            var (success, message) = await _shipApplicationService.RegisterShipAsync(dto);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully registered ship '{shipName}'");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
+    }
+
+    [SlashCommand("register-skin", "Register a new skin for a ship")]
+    [RequireRole("Booba Connoisseur")]
+    public async Task RegisterSkinAsync(
+    string shipName,
+    CoverageType coverageType,
+    CupSize cupSize,
+    Shape shape,
+    IAttachment image,
+    string? skinName = null) {
+        if (!Path.GetExtension(image.Url).Contains("png")) {
+            await RespondAsync("[Input Error]: Only PNG format images are allowed", ephemeral: true);
+            return;
+        }
+
+        await DeferAsync();
+
+        try {
+            using var client = new HttpClient();
+            var imageData = await client.GetByteArrayAsync(image.Url);
+
+            var dto = new RegisterSkin {
+                ShipName = shipName,
+                SkinName = skinName,
+                CoverageType = coverageType,
+                CupSize = cupSize,
+                Shape = shape,
+                ImageData = imageData
+            };
+
+            var (success, message) = await _skinApplicationService.RegisterSkinAsync(dto);
+
+            if (success)
+                await FollowupAsync($"[Success]: Successfully uploaded and registered skin");
+            else
+                await FollowupAsync($"{message}", ephemeral: true);
+        } catch (Exception ex) {
+            await FollowupAsync("[System Error] An unexpected error occurred while processing your request.\n" +
+                                $"```{ex.InnerException?.Message ?? ex.Message}```");
+        }
     }
 }

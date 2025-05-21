@@ -1,76 +1,104 @@
-﻿using AzurApiLibrary;
+﻿using Application;
+using Application.Interfaces;
 using AzurLaneBBot.Core.InteractionHandling;
-using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Database.ImageServices;
-using AzurLaneBBot.Database.Models;
 using AzurLaneBBot.Modules.Events;
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Domain.Interfaces;
+using Infrastructure;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ReshDiscordNetLibrary;
-using System.Configuration;
 
-namespace AzurLaneBBot {
-    public static class Program {
-        private static async Task Main() {
-            Bot.BotStarted = DateTime.Now;
+namespace AzurLaneBBot;
+public static class Program {
+    private static IConfiguration Configuration;
 
-            var serviceDescriptors = new ServiceCollection();
+    private static async Task Main() {
+        // Build configuration
+        Configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddUserSecrets(typeof(Program).Assembly)
+            .Build();
 
-            ConfigureServices(serviceDescriptors);
+        Bot.BotStarted = DateTime.Now;
 
-            serviceDescriptors.RegisterBotEvents();
+        var serviceDescriptors = new ServiceCollection();
 
-            var serviceProvider = serviceDescriptors.BuildServiceProvider();
+        ConfigureServices(serviceDescriptors);
 
-            ConfigureRequiredServices(serviceProvider);
+        serviceDescriptors.RegisterBotEvents();
 
-            // Log unhandled exceptions
-            AppDomain.CurrentDomain.UnhandledException += Domain_UnhandledException;
+        var serviceProvider = serviceDescriptors.BuildServiceProvider();
 
-            await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
-            await serviceProvider.GetRequiredService<Bot>().RunAsync();
-        }
+        ConfigureRequiredServices(serviceProvider);
 
-        private static void Domain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
-            var exc = (Exception)e.ExceptionObject;
+        // Log unhandled exceptions
+        AppDomain.CurrentDomain.UnhandledException += Domain_UnhandledException;
 
-            Logger.Log($"Caught unhandled exception: {exc.Message}");
-        }
+        await serviceProvider.GetRequiredService<InteractionHandler>().InitializeAsync();
+        await serviceProvider.GetRequiredService<Bot>().RunAsync();
+    }
 
-        private static DiscordSocketConfig BuildDiscordSocketConfig() {
-            return new DiscordSocketConfig {
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
-                UseInteractionSnowflakeDate = false
-            };
-        }
+    private static void Domain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+        var exc = (Exception)e.ExceptionObject;
 
-        private static void ConfigureServices(IServiceCollection serviceCollection) {
-            // Boilerplate for Discord.NET
-            serviceCollection.AddSingleton<Ready>();
-            serviceCollection.AddSingleton<InteractionCreated>();
-            serviceCollection.AddSingleton<Bot>();
-            serviceCollection.AddSingleton<InteractionService>();
-            serviceCollection.AddSingleton<CommandService>();
-            serviceCollection.AddSingleton<InteractionHandler>();
-            serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
+        Logger.Log($"Caught unhandled exception: {exc.Message}");
+    }
 
-            // Custom Modules/database
-            serviceCollection.AddSingleton<IAzurClient, AzurClient>();
-            serviceCollection.AddDbContext<AzurlanedbContext>(options => {
-                options.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}{ConfigurationManager.AppSettings["dbRelativeLocation"]}");
-            });
-            serviceCollection.AddSingleton<IDatabaseService, AzurDbContextDatabaseService>();
-            serviceCollection.AddSingleton<IImageService, ImageService>();
-        }
+    private static DiscordSocketConfig BuildDiscordSocketConfig() {
+        return new DiscordSocketConfig {
+            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
+            UseInteractionSnowflakeDate = false
+        };
+    }
 
-        private static void ConfigureRequiredServices(IServiceProvider serviceProvider) {
-            serviceProvider.GetRequiredService<DiscordSocketClient>();
-            serviceProvider.GetRequiredService<InteractionService>();
-            serviceProvider.GetRequiredService<IServiceProvider>();
-        }
+    private static void ConfigureServices(IServiceCollection serviceCollection) {
+        // Boilerplate for Discord.NET
+        serviceCollection.AddSingleton<Ready>();
+        serviceCollection.AddSingleton<InteractionCreated>();
+        serviceCollection.AddSingleton<Bot>();
+        serviceCollection.AddSingleton<InteractionService>();
+        serviceCollection.AddSingleton<CommandService>();
+        serviceCollection.AddSingleton<InteractionHandler>();
+        serviceCollection.AddSingleton(new DiscordSocketClient(BuildDiscordSocketConfig()));
+
+        // Configuration
+        serviceCollection.AddSingleton(Configuration);
+
+        // Database
+        serviceCollection.AddDbContext<IApplicationDbContext, AzurLaneBBotDbContext>(options => {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString)) {
+                throw new InvalidOperationException("DefaultConnection string is not configured.");
+            }
+            options.UseSqlServer(connectionString);
+        });
+        serviceCollection.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
+        // Application services
+        serviceCollection.AddScoped<ISkinApplicationService, SkinApplicationService>();
+        serviceCollection.AddScoped<IShipApplicationService, ShipApplicationService>();
+        serviceCollection.AddScoped<IGameApplicationService, GameApplicationService>();
+
+        // Aux services
+        serviceCollection.AddScoped<IImageStorageService, ImageStorageService>();
+
+        // Repositories
+        serviceCollection.AddScoped<ISkinRepository, EfSkinRepository>();
+        serviceCollection.AddScoped<IShipRepository, EfShipRepository>();
+    }
+
+    private static void ConfigureRequiredServices(IServiceProvider serviceProvider) {
+        serviceProvider.GetRequiredService<DiscordSocketClient>();
+        serviceProvider.GetRequiredService<InteractionService>();
+        serviceProvider.GetRequiredService<IServiceProvider>();
     }
 }
