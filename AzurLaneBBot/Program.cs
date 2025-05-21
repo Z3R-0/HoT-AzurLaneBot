@@ -1,8 +1,6 @@
 ﻿using Application;
 using Application.Interfaces;
 using AzurLaneBBot.Core.InteractionHandling;
-using AzurLaneBBot.Database.DatabaseServices;
-using AzurLaneBBot.Database.ImageServices;
 using AzurLaneBBot.Modules.Events;
 using Discord;
 using Discord.Commands;
@@ -85,11 +83,6 @@ public static class Program {
         });
         serviceCollection.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
-        // Old stuff
-        serviceCollection.AddSingleton<IDatabaseService, AzurDbContextDatabaseService>();
-        serviceCollection.AddSingleton<IImageService, ImageService>();
-
-        // TODO: New stuff, remove old stuff later
         // Application services
         serviceCollection.AddScoped<ISkinApplicationService, SkinApplicationService>();
         serviceCollection.AddScoped<IShipApplicationService, ShipApplicationService>();
