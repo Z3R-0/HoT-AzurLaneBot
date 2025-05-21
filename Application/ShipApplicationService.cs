@@ -5,23 +5,11 @@ using Domain.ShipAggregate;
 
 namespace Application;
 
-public class ShipApplicationService(IShipRepository shipRepository, IUnitOfWork unitOfWork) : IShipApplicationService {
+public class ShipApplicationService(
+    IShipRepository shipRepository,
+    IUnitOfWork unitOfWork) : IShipApplicationService {
     private readonly IShipRepository _shipRepository = shipRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
-    public async Task<Ship?> GetRandomShipAsync(bool allowSkins) {
-        IEnumerable<Ship> possibleShips = [];
-        if (allowSkins) {
-            possibleShips = from ship in await _shipRepository.GetAllAsync()
-                            select ship;
-        }
-
-        if (!possibleShips.Any())
-            return null;
-
-        var index = Random.Shared.Next(possibleShips.Count());
-        return possibleShips.ElementAt(index);
-    }
 
     public async Task<(bool IsSuccess, string? Errors)> DeleteShipAsync(string shipName) {
         var ship = await _shipRepository.GetByNameAsync(shipName);

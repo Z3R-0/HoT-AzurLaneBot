@@ -2,22 +2,25 @@
 using Application.Interfaces;
 
 namespace Application;
-public class GameApplicationService(IShipApplicationService shipApplicationService, ISkinApplicationService imageService) : IGameApplicationService {
+public class GameApplicationService(ISkinApplicationService skinApplicationService, IShipApplicationService shipApplicationService) : IGameApplicationService {
+    private readonly ISkinApplicationService _skinApplicationService = skinApplicationService;
     private readonly IShipApplicationService _shipApplicationService = shipApplicationService;
-    private readonly ISkinApplicationService _imageService = imageService;
 
     public async Task<GuessShipGameResult?> StartGuessShipGameAsync(bool allowSkins) {
-        var ship = await _shipApplicationService.GetRandomShipAsync(allowSkins);
-        if (ship == null) return null;
+        var skin = await _skinApplicationService.GetRandomSkin(allowSkins);
+        if (skin == null) return null;
 
-        var image = await _imageService.GetImageAsync(ship.Name);
+        var image = await _skinApplicationService.GetImageAsync(skin.Name);
         if (image == null) return null;
+
+        var ship = await _shipApplicationService.GetByIdAsync(skin.ShipId);
+        if (ship == null) return null;
 
         return new GuessShipGameResult {
             Ship = ship,
             ImageUrl = image.ImageUrl,
             ImageFilePath = image.FilePath,
-            Prompt = allowSkins ? "What is the name of this ship or skin?" : "What is the name of this ship?",
+            Prompt = "What is the name of this ship?",
         };
     }
 }

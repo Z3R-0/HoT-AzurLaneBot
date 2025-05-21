@@ -78,7 +78,7 @@ public class ShipApplicationServiceTests {
                          .ReturnsAsync(Enumerable.Empty<Ship>());
 
             // Act
-            var result = await _service.GetRandomShipAsync(allowSkins: true);
+            var result = await _service.GetRandomSkin(allowSkins: true);
 
             // Assert
             result.Should().BeNull();
@@ -93,7 +93,7 @@ public class ShipApplicationServiceTests {
                          .ReturnsAsync(ships);
 
             // Act
-            var result = await _service.GetRandomShipAsync(allowSkins: true);
+            var result = await _service.GetRandomSkin(allowSkins: true);
 
             // Assert
             result.Should().NotBeNull();

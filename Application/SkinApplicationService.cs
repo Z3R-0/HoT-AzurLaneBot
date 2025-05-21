@@ -28,6 +28,28 @@ public class SkinApplicationService(
         };
     }
 
+    public async Task<Skin?> GetRandomSkin(bool allowSkins) {
+        var allShips = await _shipRepository.GetAllAsync();
+        if (!allShips.Any())
+            return null;
+
+        var randomShip = allShips.ElementAt(Random.Shared.Next(allShips.Count()));
+
+        var allSkins = await _skinRepository.GetAllAsync();
+
+        if (allowSkins) {
+            var shipSkins = allSkins.Where(skin => skin.ShipId == randomShip.Id);
+
+            if (shipSkins.Any())
+                return shipSkins.ElementAt(Random.Shared.Next(shipSkins.Count()));
+            else
+                return null;
+        } else {
+            // Fetch the default skin (same name as the ship)
+            return allSkins.FirstOrDefault(skin => skin.ShipId == randomShip.Id && skin.Name == randomShip.Name);
+        }
+    }
+
     public async Task<(bool isSuccess, string? Errors)> DeleteSkinAsync(string skinName) {
         var skin = await _skinRepository.GetByNameAsync(skinName);
         if (skin == null) {

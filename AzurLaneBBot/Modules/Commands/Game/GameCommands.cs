@@ -29,7 +29,7 @@ public class GameCommands(IGameApplicationService gameApplicationService) : BotI
             .AddField("Caution!", "Only click the button once you are ready to answer", inline: true);
 
         var components = new ComponentBuilder()
-            .WithButton("Submit answer", GuessShipModalId + result.Ship.Name);
+            .WithButton("Submit answer", GuessShipButtonId + DiscordUtilityMethods.NormalizeName(result.Ship.Name));
 
         await FollowupWithFileAsync(result.ImageFilePath, embed: embed.Build(), components: components.Build());
     }
