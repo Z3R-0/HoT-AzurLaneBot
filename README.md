@@ -21,7 +21,7 @@ AzurLaneBBot is a Discord bot project focused on collecting and interacting with
 
 This project is meant both as a fun experiment and a vehicle for practicing clean software architecture patterns like Domain-Driven Design (DDD), CQRS, and proper separation of concerns.
 
-It’s a somewhat cheeky in theme, but quite serious in code and implementation (no like, seriously).
+— *It’s somewhat cheeky in theme, but quite serious in code and implementation (no like, seriously)* —
 
 ---
 
