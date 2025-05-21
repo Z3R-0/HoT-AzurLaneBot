@@ -10,8 +10,4 @@ public class EfShipRepository(IApplicationDbContext context) : GenericRepository
         return await _context.Ships
             .FirstOrDefaultAsync(s => s.Name.ToLower().Equals(name.ToLower()));
     }
-
-    public async Task<IEnumerable<Ship>> GetAllAsync(bool includeSkins = true) {
-        return await _context.Ships.ToListAsync();
-    }
 }

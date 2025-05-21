@@ -197,4 +197,41 @@ public class SkinApplicationServiceTests {
             result.FilePath.Should().Contain("Skin1.png");
         }
     }
+
+    public class GetRandomShipAsync : SkinApplicationServiceTests {
+        [Fact]
+        public async Task ShouldReturnNull_When_NoSkinsExist() {
+            // Arrange
+            _skinRepoMock.Setup(r => r.GetAllAsync())
+                         .ReturnsAsync([]);
+
+            // Act
+            var result = await _service.GetRandomSkin(allowSkins: true);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task ShouldReturnRandomSkin_When_SkinExist() {
+            // Arrange
+            var ship = _fixture.Build<Ship>().Create();
+            var skin = _fixture.Build<Skin>().Create();
+
+            skin.ShipId = ship.Id;
+
+            _shipRepoMock.Setup(r => r.GetAllAsync())
+                         .ReturnsAsync([ship]);
+            _skinRepoMock.Setup(r => r.GetAllAsync())
+                         .ReturnsAsync([skin]);
+
+
+            // Act
+            var result = await _service.GetRandomSkin(allowSkins: true);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().Be(skin);
+        }
+    }
 }

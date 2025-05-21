@@ -69,35 +69,4 @@ public class ShipApplicationServiceTests {
             _uowMock.Verify(u => u.SaveChangesAsync(default), Times.Once);
         }
     }
-
-    public class GetRandomShipAsync : ShipApplicationServiceTests {
-        [Fact]
-        public async Task ShouldReturnNull_When_NoShipsExist() {
-            // Arrange
-            _shipRepoMock.Setup(r => r.GetAllAsync(It.IsAny<bool>()))
-                         .ReturnsAsync(Enumerable.Empty<Ship>());
-
-            // Act
-            var result = await _service.GetRandomSkin(allowSkins: true);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task ShouldReturnRandomShip_When_ShipsExist() {
-            // Arrange
-            var ships = _fixture.CreateMany<Ship>(5).ToList();
-
-            _shipRepoMock.Setup(r => r.GetAllAsync(It.IsAny<bool>()))
-                         .ReturnsAsync(ships);
-
-            // Act
-            var result = await _service.GetRandomSkin(allowSkins: true);
-
-            // Assert
-            result.Should().NotBeNull();
-            ships.Should().Contain(result);
-        }
-    }
 }

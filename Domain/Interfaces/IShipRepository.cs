@@ -3,5 +3,4 @@
 namespace Domain.Interfaces;
 public interface IShipRepository : IGenericRepository<Ship> {
     Task<Ship?> GetByNameAsync(string name);
-    Task<IEnumerable<Ship>> GetAllAsync(bool includeSkins = true);
 }
